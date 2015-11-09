@@ -1,0 +1,8 @@
+Changelog
+- Image sizes are not uniform - Added padding on the image borders to make the
+image sizes uniform.
+- Did PCA on the two datasets -3 and 4, PCA reports the data to be low
+  dimensional - 23 and 12 dimensions respectively, but classifier performs
+  poorly on projected as well as raw data. Somehow reduce the data to a lower
+  dimension without sacrificing class separation. 
+
