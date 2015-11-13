@@ -63,7 +63,7 @@ a simple linear classifier might be able to recognize this feature after the whi
 	2. PCA or else kNN will die.
 	3. Maintain "cancer" and "no cancer" patches.
 	4. Divide test data into patches and get kNN for each patch.
-	5. If any patch (> threshold) is classified as "cancer", label image as "cancer".
+	5. If any patch has a probability > threshold, it is classified as "cancer", label image as "cancer".
 
 10. **GMMs/ Spectral Clustering:** 1 GMM per class (according to patches). Assign class that gives MLE.
 
