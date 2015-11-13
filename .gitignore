@@ -2,5 +2,6 @@
 *.tif
 *.tiff
 *.pdf
-_DS_store
 pictures
+.*.swp
+.DS_Store
