@@ -75,7 +75,7 @@ a simple linear classifier might be able to recognize this feature after the whi
 ###[Automatic Classification of Prostate Cancer Gleason Scores from Multiparametric Magnetic Resonance Images](http://www.pnas.org/content/early/2015/10/28/1505935112.full.pdf)
 1. Apply image segmentation to delineate cancerous and non-cancerous parts of images.
 2. Extracted texture-related features using Haralick features(?)
-3. Oversampled non-cancerous examples to prvent skewness (used SMOTE for this).
+3. Oversampled non-cancerous examples to prevent skewness (used SMOTE for this).
 4. **Feature Selection and Classification:**
 	1. **t-test SVM** - Selected features that were significantly different for both classes (using t tests at 95 % C.I.) and then trained an SVM.
 	2. **AdaBoost** - (Did Poorly)
@@ -91,7 +91,7 @@ a simple linear classifier might be able to recognize this feature after the whi
 2. Used 3 classes: 1) No cancer 2) Gleason Score 3 3) Gleason Score 4
 3. Developed automatic segmentation for various parts of the image (Lumen, Epithelial Cytoplasm and Epithelial Nuclei).
 4. Gland Detection -> Gland Segmentation -> Morphological Feature Extraction -> Manifold Learning -> Classification -> Evaluation.
-5. **Gland Detection:** Used pixel-wise classification. Specific arrangement of the strucutre:** Lumen is surrounded by cytoplasm which is surrounded by a ring of nuclei.**
+5. **Gland Detection:** Used pixel-wise classification. Specific arrangement of the strucutre:**Lumen is surrounded by cytoplasm which is surrounded by a ring of nuclei.**
    They use a Bayesian classifier that learns based on pixels from the before-mentioned 3 types of glands (multi-class classification). They use 600 manually denoted pixels from
    each class for training. Thus they get a **pixel-wise likelihood** of belonging to either lumen, cytoplasm or nuclei. Incorporated gland size to actual lumen structures.
 6. **Gland Segmentation:** Done after the gland lumen are found using above step.
