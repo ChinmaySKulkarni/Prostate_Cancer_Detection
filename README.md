@@ -79,7 +79,7 @@ a simple linear classifier might be able to recognize this feature after the whi
 4. **Feature Selection and Classification:**
 	1. **t-test SVM** - Selected features that were significantly different for both classes (using t tests at 95 % C.I.) and then trained an SVM.
 	2. **AdaBoost** - (Did Poorly)
-	3. **Recursive Feature Selection SVM (RFE-SVM)** - (Did the best) Here the feature selection is integrated with the classifier's training and an intersection of
+	3. **Recursive Feature Selection SVM (RFE-SVM)** - See [SVM-RFE](http://www.mathworks.com/matlabcentral/fileexchange/50701-feature-selection-with-svm-rfe)  (Did the best) Here the feature selection is integrated with the classifier's training and an intersection of
 	features is modeled. It allows feature interactions and thus is able to explicitly model the correlation between features thus leading to robust classifier performance.
 	Feature selection involved backward elimination where in each iteration, the feature that had the least impact on improving the performance of the classifier was
 	removed. The algorithm continued until the desired number of features *r* was reached. An RFE-SVM is essentially a method for ranking the relative importance of a set of features such
