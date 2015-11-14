@@ -23,6 +23,21 @@ CS 598 - Machine Learning for Signal Processing Project
 7. Epithelial nuclei (which stain blue) invade stroma (which stains light red), and lumen regions (which do not stain) remain white.
 8. As the level of malignancy increases, the above characteristic is more prominent.
 
+### Observations Mentioned in Related Work:
+Normal prostate tissue consists of gland units surrounded by fibromuscular tissue, called stroma, which holds the gland units
+together. Each gland unit is composed of rows of epithelial cells located around a duct, named the lumen. When cancer occurs, epithelial cells replicate in an uncontrolled way, disrupting the
+regular arrangement of gland units.
+
+1. The glands in the cancerous region become small, regular, and more tightly packed as cancer progresses from benign to highly malignant.
+2. Size and roundness of the glands is an important factor in distinguishing cancerous vs. benign images.
+3. As the Gleason grade increases, the glands start to fuse, become regular, tightly packed, and smaller in size. However, despite these changes, all gland regions share
+   certain characteristics that can be used to identify the Gleason grade of a tissue region.
+4. Use stain colors to get the different types of glands: White is lumen, pink is cytoplasm, purple dots are nuclei.
+5. Benign images have large and irregular lumen regions, higher grade cancers have small, narrow lumens.
+6. Use a color histogram to identify lumen glands (should be white and be surrounded by pink and purple).
+7. Gleason grade 4 distributions show areas that are smaller and more uniform compared with benign epithelium, which has a wide range of large gland and lumen areas. 
+   Thus, smaller and more uniform glands are more indicative of grade.
+
 ## Possibly try the following:
 
 1. **PCA, ICA, NMF:** Apply PCA, ICA, NMF on **patches** of data. Remove most prominent eigen vector (presumably common to both classes).
