@@ -13,9 +13,9 @@ function [ image_data, y_labels, filenames, imgx, imgy, numcolors ] = load_data(
        if strcmp(filename,'.')~=1 && strcmp(filename,'..')~=1
            filenames{k} = filename;
            k=k+1;
-           [s, e] = regexp(filename,'_.*\.');
+           [s, e] = regexp(filename,'red');
            suffix = filename(s:e);
-           if strcmp(suffix,'_red.')==1
+           if strcmp(suffix,'red')==1
                y_labels = [y_labels; 1];
            else
                y_labels = [y_labels; 0];
