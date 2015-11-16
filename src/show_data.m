@@ -10,6 +10,6 @@ function show_data(image_data,filenames,img_x,img_y,numcolors)
         image = reshape(image_data(:,i),img_x,img_y,numcolors);
         title(filenames{i});
         subplot(4,h,i);
-        imshow(image);
+        imshow(1000*image);
     end
 end

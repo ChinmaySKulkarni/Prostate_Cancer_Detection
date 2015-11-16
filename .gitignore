@@ -5,3 +5,4 @@
 pictures
 .*.swp
 .DS_Store
+*.m.orig

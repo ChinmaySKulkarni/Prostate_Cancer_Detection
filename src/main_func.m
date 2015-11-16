@@ -34,25 +34,75 @@ function main_func()
     svm_predict
     %}
     
-    patch_analysis();
+    % do different dimensionality reduction transforms on the patch data
+    patch_pca_analysis();
+    patch_nmf_analysis();
+    patch_ica_analysis();
 end
 
-function image_analysis()
-
-end
-
-function patch_analysis()
+function patch_pca_analysis()
     % load the patched data;
     [patch_data, y_labels, filenames, img_x, img_y, numcolors] = ...
         load_data('../clipped_patch_data3_50x50/',1);
     % do the pca on the entire patch data;
     [patch_dim,numpatches] = size(patch_data);
     [patch_pca_coefficients, patch_pca_projections,vars,expl] = pca_analysis(patch_data);
-    vars
+    % the amount of variance explained by the top 20 components
+    s = sum(expl(1:20))
+    % show the top 20 components
+    top_pca = patch_pca_coefficients(:,1:20);
     figure;
-    stem(vars);
+    show_pca(top_pca,50,50,3);
+end
+
+function patch_nmf_analysis()
+
+    % load the patched data;
+    [patch_data, y_labels, filenames, img_x, img_y, numcolors] = ...
+        load_data('../clipped_patch_data3_50x50/',1);
+    [patch_dim,numpatches] = size(patch_data); 
+    
+    % convert the patch data to grayscale (in case you want to run on
+    % greyscale data )
+    %{
+    patch_grey_data = [];
+    for i=1:numpatches
+        patch_image = patch_data(:,i);
+        patch_image = reshape(patch_image,50,50,3);
+        patch_greyscale = rgb2gray(patch_image);
+        patch_greyscale = reshape(patch_greyscale,50*50,1);
+        patch_grey_data = [patch_grey_data, patch_greyscale];
+    end
+    %}
+   
+    % try out nmf for 4 components - 
+    % stroma 
+    % lumen
+    % epithilial nuclei
+    % background
+    [nmf_components, nmf_weights] = nnmf(patch_data,4);
     figure;
-    stem(expl);
-    %figure;
-    %show_pca(pca_coefficients,img_x,img_y,numcolors);
+    show_pca(nmf_components,50,50,3);
+    
+end
+
+function patch_ica_analysis()
+    
+    % load the patched data;
+    [patch_data, y_labels, filenames, img_x, img_y, numcolors] = ...
+        load_data('../clipped_patch_data3_50x50/',1);
+    [patch_dim,numpatches] = size(patch_data); 
+    
+    % do the pca on the entire patch data;
+    [patch_pca_coefficients, patch_pca_projections,vars,expl] = pca_analysis(patch_data);
+    top_pca_coeff = patch_pca_coefficients(:,1:20);
+    top_pca_coeff = top_pca_coeff';
+    projected_data = top_pca_coeff*patch_data;
+  
+    % compute the ICA analysis features
+    W = fastica(projected_data.');
+    ica_components = W*top_pca_coeff;
+    figure;
+    show_pca(ica_components',50,50,3);
+   
 end
