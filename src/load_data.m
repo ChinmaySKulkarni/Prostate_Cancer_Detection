@@ -37,23 +37,25 @@ function [ image_data, y_labels, filenames, imgx, imgy, numcolors ] = load_data(
            x_diff = max_imgx-img_x;
            y_diff = max_imgy-img_y;
            % what padval to chose (must be the same color as boundary
-           % region, or different for each color component)
-           padval = 255;
+           % region, or different for each color component). Right now
+           % values hardcoded from that found in the sample background
+           % image
+           padvals = [242,243,244];
            for j=1:3
                color_image = image(:,:,j);
                padding_x = floor(x_diff/2);
                padding_y = floor(y_diff/2);
                if mod(x_diff,2)==0
-                   color_image = padarray(color_image,[padding_x,0],padval,'both');
+                   color_image = padarray(color_image,[padding_x,0],padvals(j),'both');
                else 
-                   color_image = padarray(color_image,[padding_x+1,0],padval,'pre');
-                   color_image = padarray(color_image,[padding_x,0],padval,'post');
+                   color_image = padarray(color_image,[padding_x+1,0],padvals(j),'pre');
+                   color_image = padarray(color_image,[padding_x,0],padvals(j),'post');
                end
                if mod(y_diff,2)==0
-                   color_image = padarray(color_image,[0,padding_y],padval,'both');
+                   color_image = padarray(color_image,[0,padding_y],padvals(j),'both');
                else 
-                   color_image = padarray(color_image,[0,padding_y],padval,'pre');
-                   color_image = padarray(color_image,[0,padding_y+1],padval,'post');
+                   color_image = padarray(color_image,[0,padding_y],padvals(j),'pre');
+                   color_image = padarray(color_image,[0,padding_y+1],padvals(j),'post');
                end
                padded_image = cat(3,padded_image,color_image);
            end

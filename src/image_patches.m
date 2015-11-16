@@ -6,6 +6,11 @@ function [ patch_image,patch_coord, numskipped] = image_patches( input_image, pa
     patch_coord = [];
     numskipped = 0;
     bg_image = im2double(bg_image);
+    bg_image_avg = zeros(1,numcolors);
+    for i=1:numcolors
+        color_image = bg_image(:,:,i);
+        bg_image_avg(i) = mean(color_image(:));
+    end
     bg_image = reshape(bg_image, patch_x*patch_y*numcolors,1);
     for i=1:patch_x:imgy
         for j=1:patch_y:imgx
@@ -15,13 +20,17 @@ function [ patch_image,patch_coord, numskipped] = image_patches( input_image, pa
             patchx_len = patch_endj - j +1;
             patch = input_image(i:patch_endi,j:patch_endj,:);
             if patchx_len < patch_x
-                z = ones(patchy_len,patch_x-patchx_len,3);
-                z = 1*z;
+                z = ones(patchy_len,patch_x-patchx_len,numcolors);
+                for k=1:numcolors
+                    z(:,:,k) = bg_image_avg(k)*z(:,:,k);
+                end
                 patch = [patch, z];
             end
             if patchy_len < patch_y
-                z = ones(patch_y-patchy_len,patch_x,3);
-                z = 1*z;
+                z = ones(patch_y-patchy_len,patch_x,numcolors);
+                for k=1:numcolors
+                    z(:,:,k) = bg_image_avg(k)*z(:,:,k);
+                end
                 patch = [patch; z];
             end
             [x, y, z] = size(patch);
