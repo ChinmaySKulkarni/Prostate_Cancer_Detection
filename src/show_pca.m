@@ -16,7 +16,7 @@ function show_pca(image_data,img_x,img_y,numcolors)
             imagesc(image);
         else 
             subplot(4,h,i);
-            imshow(1*image);
+            imshow(100*image);
         end
     end
 end
