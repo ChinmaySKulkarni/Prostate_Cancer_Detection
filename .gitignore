@@ -5,3 +5,5 @@ pictures
 .DS_Store
 _DS_Store
 *.m.orig
+clipped_matfile_patch_data3_50x50/*.tif*
+
