@@ -2,7 +2,7 @@ function main_func()
 % runs the pgrogram
     close all;
     % load the data for the 3 dataset and write the patches
-    [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete3/',0.4);
+    % [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete3/',0.4);
     
     % do a basic pca analysis on the data
     %basic_pca_analysis(image_data,img_x,img_y,numcolors);
@@ -21,7 +21,10 @@ function main_func()
     
     % do prediction of cancerous/non_cancerous patches after projecting the
     % labelled patch data in ICA space
-    % accuracy = ica_classifier_analysis()
+    [accuracy,precision,recall] = ica_classifier_analysis();
+    accuracy
+    precision
+    recall
     
     
 end
@@ -66,7 +69,7 @@ function single_image_gmm(images, imgx, imgy, numcolors, filenames, numcomps)
     end
 end
 
-function [accuracy] =  ica_classifier_analysis()
+function [accuracy,precision,recall] =  ica_classifier_analysis()
 
     % load the data from the labelled red patches
     [patch_cancer,~,~, patchx, patchy, numcolors] = load_data('../cancerous_patch3_50x50_labelled/cancer/',1);
@@ -80,7 +83,7 @@ function [accuracy] =  ica_classifier_analysis()
     ica_data = patch_ica_analysis(total_data,100,false);
     patch_cancer = ica_data(:,1:num_cancer);
     patch_no_cancer = ica_data(:,num_cancer+1:num_cancer+num_no_cancer);
-    patch_predict = ica_data(:,num_cancer+num_no_cancer+2:end);
+    patch_predict = ica_data(:,num_cancer+num_no_cancer+1:end);
     
     % create the training and test splits and the data labels for 
     % training.
@@ -98,8 +101,7 @@ function [accuracy] =  ica_classifier_analysis()
     test_perm = randperm(numtest);
     test_data = test_data(:,test_perm);
     test_labels  = test_labels(:,test_perm);
-    [accuracy,classifier] = basic_svm_classifier(train_data,train_labels,test_data,test_labels);
-    accuracy
+    [accuracy,precision,recall,classifier] = basic_svm_classifier(train_data,train_labels,test_data,test_labels);
     
     %use the classifier to divide the patches in the green data into
     %cancerous / non-cancerous and then evaluate them using human
@@ -117,17 +119,39 @@ function [accuracy] =  ica_classifier_analysis()
     
 end
 
-function [accuracy,svm_train] = basic_svm_classifier(train_data,train_labels,test_data,test_labels)
+function [accuracy,precision,recall] = classifier_performance(test_labels,predict_labels)
+    tp = 0; 
+    fp = 0;
+    fn = 0;
+    tn = 0;
+    for i =1:numel(predict_labels)
+        if predict_labels(i)==1
+            if predict_labels(i)==test_labels(i)
+                tp = tp+1;
+            else 
+                fp = fp+1;
+            end
+        else
+            if predict_labels(i)==test_labels(i)
+                tn = tn+1;
+            else
+                fn = fn+1;
+            end
+        end
+    end
+    precision = tp/(tp+fp);
+    recall = tp/(tp+fn);
+    accuracy = (tp+tn)/(fp+fn+tp+tn);
+end
+
+function [accuracy,precision,recall,svm_train] = basic_svm_classifier(train_data,train_labels,test_data,test_labels)
 % takes in the training and testing data and labels in (dimxxnumexamples)
 % format and outputs the test labels
     %learn a soft-margin svm
-    svm_train = svmtrain(train_data.',train_labels,'showplot',true,'kernel_function','rbf','boxconstraint',0.1);
+    svm_train = svmtrain(train_data.',train_labels,'showplot',true,'kernel_function','linear','boxconstraint',0.1);
     svm_predict = svmclassify(svm_train,test_data.');
     svm_predict = svm_predict';
-    matches = svm_predict==test_labels;
-    sum(matches)
-    numel(test_labels)
-    accuracy = sum(matches)/numel(test_labels);
+    [accuracy,precision,recall] = classifier_performance(test_labels,svm_predict);
 end
 
 function basic_pca_analysis(image_data,img_x,img_y,numcolors)
