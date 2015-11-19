@@ -7,8 +7,10 @@ function main_func()
     % do a basic pca analysis on the data
     %basic_pca_analysis(image_data,img_x,img_y,numcolors);
     
-    % create the patch images
-    % create_image_patches(image_data,img_x,img_y,numcolors,filenames,'../pictures_data/background.tiff',50,50,'../clipped2_patch_data3_50x50');
+    % create the patch images, pass false as the last parametet in order to
+    % create the matfile for the patches in the directory specified by
+    % second last argument.
+    % create_image_patches(image_data,img_x,img_y,numcolors,filenames,'../pictures_data/background.tiff',50,50,'../clipped_matfile_patch_data3_50x50',false);
     
     % do different dimensionality reduction transforms on the patch data
     %patch_pca_analysis('../clipped_patch_data3_50x50/');
@@ -21,10 +23,10 @@ function main_func()
     
     % do prediction of cancerous/non_cancerous patches after projecting the
     % labelled patch data in ICA space
-    [accuracy,precision,recall] = ica_classifier_analysis();
-    accuracy
-    precision
-    recall
+    % [accuracy,precision,recall] = ica_classifier_analysis();
+    % accuracy
+    % precision
+    % recall
     
     
 end
@@ -161,17 +163,19 @@ function basic_pca_analysis(image_data,img_x,img_y,numcolors)
     show_pca(pca_coefficients, img_x, img_y, numcolors);
 end
 
-function create_image_patches(image_data,img_x,img_y,numcolors,filenames,bg_image_path,patchx,patchy,patch_dir)
+function create_image_patches(image_data,img_x,img_y,numcolors,filenames,bg_image_path,patchx,patchy,patch_dir,write_images)
 % creates and writes image patches from the image data in 'image_data'. The
 % patch dimensions are specified in 'patchx' and 'patchy'. The
 % 'bg_image_path' points to the background image patch of size 'patch_x'
 % and 'patchy' which is used to filter out background patches. 'patch_dir'
 % refers to the directory where the created patches will be stored.
+% write_images' is true then patch images will be created othwerwise a mat
+% file will be created.
     bg_image = imread(bg_image_path);
     bg_image = bg_image(1:patchx,1:patchy,:);
     [patch_data, patch_coord] =  patch_all_images(image_data,img_x,img_y,numcolors,patchx,patchy,bg_image);
     mkdir(patch_dir);
-    write_patches(patch_data,patch_coord,filenames,patchx,patchy,numcolors,patch_dir);
+    write_patches(patch_data,patch_coord,filenames,patchx,patchy,numcolors,patch_dir,write_images);
 end
 
 function patch_gmm_fit_analysis(patch_data_dir,numk, num_pca, green_keep)
