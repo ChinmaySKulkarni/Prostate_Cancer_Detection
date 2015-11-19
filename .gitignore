@@ -1,8 +1,7 @@
 *~
-*.tif
-*.tiff
 *.pdf
 pictures
 .*.swp
 .DS_Store
+_DS_Store
 *.m.orig
