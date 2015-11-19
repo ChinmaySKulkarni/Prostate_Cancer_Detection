@@ -8,6 +8,7 @@ function show_data(image_data,filenames,img_x,img_y,numcolors)
         %subplot(2,h);
     for i=1:numimages
         image = reshape(image_data(:,i),img_x,img_y,numcolors);
+        image = rgb2gray(image);
         title(filenames{i});
         subplot(4,h,i);
         imshow(image);

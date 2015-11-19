@@ -3,7 +3,7 @@ function main_func()
     close all;
     % load the data for the 3 dataset and write the patches
     % [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete3/',0.4);
-    
+    % show_data(image_data);
     % do a basic pca analysis on the data
     %basic_pca_analysis(image_data,img_x,img_y,numcolors);
     
