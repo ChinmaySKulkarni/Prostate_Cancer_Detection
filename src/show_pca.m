@@ -5,7 +5,7 @@ function show_pca(image_data,img_x,img_y,numcolors)
     if 4*h < numimages
         h = h+1;
     end
-        %subplot(2,h);
+
     for i=1:numimages
         image = reshape(image_data(:,i),img_x,img_y,numcolors);
         if (numcolors==1)

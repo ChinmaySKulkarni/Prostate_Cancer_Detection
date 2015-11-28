@@ -1,5 +1,14 @@
 function write_patches( patch_data, patch_coords, filenames, patch_x, patch_y, numcolors, base_path,write_images )
-%Writes all the patches for all the image files
+% Writes all the patches for all the image files. patch_data contains the
+% stacked vectorized patch data for each image. i.e. the patch data for
+% each image is vectorized and the data for various images are stacked on
+% top of each other. If write images is 'true' the patch image files are
+% written to the destination folder specified by 'base_path', otherwise a
+% the data is written in matlab '.mat' form in the base folder., patch_x,
+% patch_y control the patch size and filenames and patch_coords identify
+% the patch's coordinates in the original image and the filename of the
+% original image.
+
     % save the patch data in the matrix
     [numimages,~] = size(patch_data);
     patch_save_names = cell(1,numimages);

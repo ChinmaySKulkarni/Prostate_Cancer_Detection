@@ -1,5 +1,5 @@
 function [ patch_image,patch_coord, numskipped] = image_patches( input_image, patch_x, patch_y, bg_image )
-%IMAGE_PATCHES Summary of this function goes here
+% Creates and returns the patches for a single image.
 %   Detailed explanation goes here
     [imgy, imgx , numcolors ] = size(input_image);
     patch_image = [];
