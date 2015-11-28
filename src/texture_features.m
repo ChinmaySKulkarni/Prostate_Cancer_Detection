@@ -1,5 +1,5 @@
 %Retrieves texture features. Returns the F matrix from SFTA computation 
-%F -> [Number of Images X 24]
+%F -> [24 X Number of Images]
 function F = texture_features()
     [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../clipped_matfile_patch_data3_50x50/',1);
     image_data = image_data.';
@@ -48,6 +48,7 @@ function F = texture_features()
     precision
     recall
     %}
+    F = F';
    
 end
     
