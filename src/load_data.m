@@ -1,6 +1,11 @@
 function [ image_data, y_labels, filenames, imgx, imgy, numcolors ] = load_data( input_dir, resize_scale )
-%LOAD_DATA loads the images from a given folder , vectorizes
-% and returns them. image_data is a dims x num_images matrix
+% LOAD_DATA loads the images from a given folder , vectorizes and returns them. 
+% image_data is a dims x num_images matrix. 'filenames' gives the respective
+% file names of the image files as a cell array. 'y_labels' gives the
+% labels (0 or 1) of the image files based on their names (red being
+% 1/cancerous green being 0/non-cancerous). imgx, imgy give the dimensions
+% of each image in the data. numcolors gives the number of colors in the
+% image.
    image_files = dir(fullfile(input_dir,'*.tif*'));
    image_data = [];
    max_imgx=0;

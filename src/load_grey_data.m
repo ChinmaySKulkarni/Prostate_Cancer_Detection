@@ -1,6 +1,7 @@
 function [ image_data, y_labels, filenames, imgx, imgy, numcolors ] = load_grey_data( input_dir, resize_scale )
 %LOAD_DATA loads the images from a given folder , vectorizes
-% and returns them. image_data is a dims x num_images matrix
+% and returns them. image_data is a dims x num_images matrix. Similar to
+% load_data but returns greyscale images
    image_files = dir(fullfile(input_dir,'*.tif*'));
    image_data = [];
    max_imgx=0;

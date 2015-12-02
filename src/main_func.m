@@ -1,8 +1,8 @@
 function main_func()
 % runs the pgrogram
     close all;
-    % load the data for the 3 dataset and write the patches
-    % [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete3/',0.4);
+    % load the data for the 4 dataset and write the patches
+    % [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete4/',0.4);
     % show_data(image_data);
     % do a basic pca analysis on the data
     %basic_pca_analysis(image_data,img_x,img_y,numcolors);
@@ -10,11 +10,11 @@ function main_func()
     % create the patch images, pass false as the last parametet in order to
     % create the matfile for the patches in the directory specified by
     % second last argument.
-    % create_image_patches(image_data,img_x,img_y,numcolors,filenames,'../pictures_data/background.tiff',50,50,'../clipped_matfile_patch_data3_50x50',false);
+    % create_image_patches(image_data,img_x,img_y,numcolors,filenames,'../pictures_data/background.tiff',50,50,'../clipped_matfile_patch_data4_50x50',true);
     
     % do different dimensionality reduction transforms on the patch data
     %patch_pca_analysis('../clipped_patch_data3_50x50/');
-    %patch_nmf_analysis('../clipped_patch_data3_50x50/');
+    % patch_nmf_analysis('../clipped_patch_data3_50x50/',false);
     %ica_projection = patch_ica_analysis('../clipped2_patch_data3_50x50/',100,true);
     
     % gmm clustering on patch and single images.
@@ -119,31 +119,6 @@ function [accuracy,precision,recall] =  ica_classifier_analysis()
         imwrite(predict_image,filepath);
     end
     
-end
-
-function [accuracy,precision,recall] = classifier_performance(test_labels,predict_labels)
-    tp = 0; 
-    fp = 0;
-    fn = 0;
-    tn = 0;
-    for i =1:numel(predict_labels)
-        if predict_labels(i)==1
-            if predict_labels(i)==test_labels(i)
-                tp = tp+1;
-            else 
-                fp = fp+1;
-            end
-        else
-            if predict_labels(i)==test_labels(i)
-                tn = tn+1;
-            else
-                fn = fn+1;
-            end
-        end
-    end
-    precision = tp/(tp+fp);
-    recall = tp/(tp+fn);
-    accuracy = (tp+tn)/(fp+fn+tp+tn);
 end
 
 function [accuracy,precision,recall,svm_train] = basic_svm_classifier(train_data,train_labels,test_data,test_labels)
@@ -320,7 +295,7 @@ function patch_nmf_analysis(patch_data_dir,gray_data)
     % convert the patch data to grayscale (in case you want to run on
     % greyscale data )
    
-    if grey_data==true
+    if gray_data==true
         patch_grey_data = [];
         for i=1:numpatches
             patch_image = patch_data(:,i);
@@ -332,12 +307,17 @@ function patch_nmf_analysis(patch_data_dir,gray_data)
         patch_data = patch_grey_data;
     end
    
-    % try out nmf for 4 components - 
-    % stroma 
-    % lumen
-    % epithilial nuclei
-    % background
-    [nmf_components, nmf_weights] = nnmf(patch_data,4);
+    % display the results of NMF analysis for intuitive understanding
+    [nmf_components, nmf_weights] = nnmf(patch_data,20);
+    reconstructed_data = nmf_components*nmf_weights;
+    [~, numpatches] = size(reconstructed_data);
+    base_dir = '../nmf_reconstruction/';
+    mkdir(base_dir);
+    for i=1:numpatches
+        patch = reshape(reconstructed_data(:,i),50,50,3);
+        write_file = strcat(base_dir,filenames{i});
+        imwrite(patch,write_file);
+    end
     figure;
     show_pca(nmf_components,50,50,3);
     
