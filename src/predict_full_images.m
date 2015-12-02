@@ -3,16 +3,48 @@
 % image (as predicted by the gmm classifier) v/s the originally labelled
 % data
 
+warning('on','all');
+% {
+% With normal images
 [patch_cancer,~,filenames_cancer, patchx, patchy, numcolors] = load_data('../cancerous_patch3_50x50_labelled/cancer/',1);
 [patch_no_cancer,~,filenames_no_cancer, patchx, patchy, numcolors] = load_data('../cancerous_patch3_50x50_labelled/no_cancer/',1);
+%}
+%{
+% With gaussian subsampled images
+[patch_cancer,~,filenames_cancer, patchx, patchy, numcolors] = load_data('../level2_gaussian_subsampled_patch3_13x13_labelled/cancer/',1);
+[patch_no_cancer,~,filenames_no_cancer, patchx, patchy, numcolors] = load_data('../level2_gaussian_subsampled_patch3_13x13_labelled/no_cancer/',1);
+%}
+
+
+
 [train_data, y_train,test_data, y_test,data_stats, train_filenames, test_filenames, unique_image_names] = create_image_patch_train_test_split(patch_cancer,filenames_cancer,...
     patch_no_cancer,filenames_no_cancer,patchx,patchy,numcolors);
 [~,numtrain] = size(train_data);
 prior_cancer = sum(y_train)/numel(y_train);
 prior_no_cancer = 1 - prior_cancer;
 complete_patch_data = [train_data,test_data];
-[pca_coefficients,~,vars,expl] = pca_analysis(complete_patch_data);
-reduced_patch_data = pca_coefficients(:, 1:100)'*complete_patch_data;
+
+% Do domensionality reduction of the data
+% {
+% PCA - gives the best result
+[pca_coefficients,~,vars,expl,mu] = pca_analysis(complete_patch_data);
+pca_top_components = pca_coefficients(:,1:100)';
+reduced_patch_data = pca_top_components*complete_patch_data;
+%}
+%{ 
+% NMF - gives very bad result, not at all worthwhile
+nmf_options = statset('MaxIter',10000,'TolFun',1e-5);
+[nmf_components, nmf_weights,residue] = nnmf(complete_patch_data,70,'options',nmf_options);
+reduced_patch_data = nmf_weights;
+residue
+%}
+% {
+% Gaussian subsampled images - does not work as data dimensionality not
+% enough for GMM
+% reduced_patch_data = complete_patch_data;
+%}
+
+% perform the prediction
 X_train = reduced_patch_data(:,1:numtrain);
 X_test = reduced_patch_data(:,numtrain+1:end);
 [GMMModel_cancer, GMMModel_noncancer] = gmm_model(X_train, y_train);
@@ -52,9 +84,78 @@ for i=1:all_data
     imwrite(patch_image,writepath);
 end
 
+
+% print the prediction stats for labelled data
 unique_image_names
 data_stats
 predicted_stats
+
+
+% {
+% With normal patch data
+[patch_green_data,~,all_green_patch_names, patchx, patchy, numcolors] = load_data('../cancerous_patch3_50x50_labelled/unlabelled_green/',1);
+[~,num_green_patches] = size(patch_green_data);
+%}
+%{
+% With gaussian subsampled images
+[patch_green_data,~,all_green_patch_names, patchx, patchy, numcolors] = load_data('../level2_gaussian_subsampled_patch3_13x13_labelled/unlabelled_green/',1);
+[~,num_green_patches] = size(patch_green_data);
+%}
+
+
+
+% Do dimensionality reduction
+% {
+% PCA - gives the best result
+reduced_green_patch_data = pca_top_components*(patch_green_data-repmat(mu',1, num_green_patches));
+%}
+%{
+% NMF - very bad results, no point in doing
+[~,reduced_green_patch_data,residue_green] = nnmf(patch_green_data,70);
+residue_green
+%}
+% {
+% Gaussian sumsampled images - does not work, not enough dimensionality for
+% gmm
+% reduced_green_patch_data = patch_green_data;
+%}
+
+[unique_green_image_names,parent_green_filenames] = get_parent_filenames(all_green_patch_names);
+
+% write out the per image predictions
+for i=1:numel(unique_green_image_names)
+    basepath = strcat('../image_green_prediction/',unique_green_image_names{i});
+    mkdir(basepath);
+    %mkdir(strcat(basepath,'/cancer'));
+    %mkdir(strcat(basepath,'/no_cancer'));
+end
+
+% calculate the predictions
+green_predicted_stats = zeros(numel(unique_green_image_names),1);
+all_green_predicted = prior_cancer*GMMModel_cancer.pdf(reduced_green_patch_data') > prior_no_cancer*GMMModel_noncancer.pdf(reduced_green_patch_data');
+%probs =[GMMModel_cancer.pdf(reduced_green_patch_data'),GMMModel_noncancer.pdf(reduced_green_patch_data')];
+%probs(1,1)
+
+
+% calculate the per image classification rate for the classifier
+for i=1:num_green_patches
+    patch_file_name = parent_green_filenames{i};
+    findval = ismember(unique_green_image_names,patch_file_name);
+    img_idx = find(findval==1);
+    basepath = strcat('../image_green_prediction/',unique_green_image_names{img_idx},'/');
+    green_predicted_stats(img_idx) = green_predicted_stats(img_idx)+all_green_predicted(i);
+    if all_green_predicted(i)==1
+        writepath  = strcat(basepath,'/cancer/',all_green_patch_names{i});
+    else
+        writepath =  strcat(basepath,'/no_cancer/',all_green_patch_names{i});
+    end
+    patch_image = patch_green_data(:,i);
+    patch_image = reshape(patch_image,patchx,patchy,numcolors);
+    imwrite(patch_image,writepath);
+end
+sum(all_green_predicted)
+unique_green_image_names
+green_predicted_stats
 
 
 

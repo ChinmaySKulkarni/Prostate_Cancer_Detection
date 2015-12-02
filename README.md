@@ -136,3 +136,107 @@ a simple linear classifier might be able to recognize this feature after the whi
 	The texture becomes finer as the epithelial nuclei spread across the tissue. The connection between the texture characteristics of
 	the tissue and the level of tumor malignancy has been confirmed in several studies. Used **fractal dimension features, fractal code features, wavelet transform features, etc.**
 6. **Classification:** Evaluated Bayesian, kNN and SVM classifiers.
+
+
+## Experiments
+List the various methods tried and the results from each of the methods
+1. Train Gaussian Mixture Model on cancerous and non-cancerous patches. For a
+   new unlabelled patch, use the mixture models of the positive and negative
+   classes to predict whether an incoming patch is cancerous/non-cancerous.
+   Since each patch is 50x50x3 , different types of dimensionality reduction
+   approaches were tried:
+   - Used PCA, the first 1000 principal components explained about 99% variance
+     in the raw patch data. But since we do not have that many patches while
+     training the classifier, we had to restrict ourselves to far fewer
+     principal components, With just PCA dimensionality reduction, we got the
+     following results:
+     With 75 principal components explaining % variance
+     With a 70-30 train test split with 177/722 cancerous patches in the
+     training, and using the GMM classifier we got the following performance on
+     the labelled test patches:
+     Accuracy : 72-76%
+     Precision : ~0.0.3-0.5
+     Recall : ~0.3
+     F-score : 0.3-0.4
+     Per Image Prediction
+     Total      Labelled 
+     Patches    Cancerous
+     63         4
+     64         41
+     56         0
+     56         6
+     61         18
+     60         15
+     60         17
+     59         20
+     58         10
+     60         6
+     63         32
+     62         8
+     
+    predicted_stats    
+         
+    20
+    17
+    17
+    17
+    17
+    19
+    21
+    13
+     8
+     9
+    11
+    11
+
+    But with prediction on on-cancerous unlabelled data, there are far more
+    false positives per image.
+
+    With 100 principal components :
+    Accuracy : 78%
+    Precision : 0.54
+    Recall : 0.41
+    Fscore : 0.49
+
+    Per Image Prediction
+
+    predicted_stats =
+
+    18
+    19
+    13
+    17
+    25
+    16
+    21
+    13
+     9
+     9
+    11
+    13    
+
+    But between successive runs there is a lot more variation.
+
+   - Used NMF dimensionality reduction on the data, using the first 100 analysis 
+     features and with the same prediction as above but very disappointing results
+
+[TODOs in this approach]
+
+   - Use textre features extracted from [Reference paper here] in addition to
+     the features obtained after dimensionality reduction. This did not yield
+     significant improvement in results. 
+     
+   - Use Gaussian Pyramid subsampled patches for the GMM classifier. Subsampled
+     at levels 1 and 2. However, with the reduction in pixels,No longer possible to use 
+     GMM classifer.
+          
+Try out the following maybe [TODO]:
+- Gray level co-occurence matrix for detection of texture to detect epithilial
+  cells
+- Wavelet analysis for image segmentation ??
+- Extract epithileal cells texture using repeated opening closing
+- Follow an approach similar to the one in the above paper where we extract the number
+  of lumen objects, number of epithilial cells etc and extract features based on that
+  (basically segment the image based on object distribution) and then create features
+  out of that and then apply the classifier.
+
