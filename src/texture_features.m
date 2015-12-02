@@ -19,7 +19,7 @@ function F = texture_features()
        f = sfta(reshape(grayscale_image_data(i,:,:),img_x,img_y),dims/6);
        F(i,:) = f;
     end
-   
+
     %{
     %Create the training and test splits. First 30 % is test data and
     %remaining is training data.
