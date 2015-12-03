@@ -51,5 +51,3 @@ function F = texture_features()
     F = F';
    
 end
-    
-    
