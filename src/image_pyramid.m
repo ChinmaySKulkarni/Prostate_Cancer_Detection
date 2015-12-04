@@ -1,5 +1,5 @@
 % creates subsampled image patches using gaussian image pyramid subsampling
-% technique and then applies the GMM classifier to them
+% technique 
 
 % load the entire patch data
 [image_data,y_labels,filenames, img_x, img_y, numcolors] = load_data('../cancerous_patch3_50x50_labelled/cancer/',1);
