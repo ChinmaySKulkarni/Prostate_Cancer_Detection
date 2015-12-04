@@ -1,34 +1,45 @@
 function LM_filter_bank()
     %Get the 48 filters for the LM filter bank.
     F = makeLMfilters();
+    %disp_filters(F);
+    return
     disp('Got filters')
     modified_images = modify_images(0);
     [total_images,img_x,img_y,~] = size(modified_images);
+    
+    %TODO: Remove
+    total_images = 1;
+    
     gray_modified_images = zeros(total_images, img_x, img_y);
     %Convert the modified images to grayscale for LM filter bank to work.
     for i=1:total_images
         gray_modified_images(i,:,:) = rgb2gray(squeeze(modified_images(i,:,:,:)));
     end
+    %imshow(squeeze(gray_modified_images(1,:,:)));
     disp('Converted Modified RGB Images to Grayscale')
     
-    response = zeros(total_images,img_x,img_y,48);
+    conv_x_dim = 904;
+    conv_y_dim = 1042;
+    response = zeros(total_images,conv_x_dim, conv_y_dim,48);
     %Get the response of each filter for each image.
+    total_filters = 1;
     for i=1:total_images
         curr_img = squeeze(gray_modified_images(i,:,:));
-        for j=1:48
-            response(i,:,:,j) = conv2(curr_img,F(:,:,j), 'valid');
+        for j=1:total_filters
+            response(i,:,:,48) = conv2(curr_img,F(:,:,j), 'valid');
         end
     end
     disp('Got the reponse of each filter for each image')
     size(response)
     %Display all the filter's responses for an image.
     first_img_response = squeeze(response(1,:,:,:));
+    disp_response(first_img_response,1,1);
+    %{
     disp_response(first_img_response,1,12);
     disp_response(first_img_response,13,24);
     disp_response(first_img_response,25,36);
     disp_response(first_img_response,37,48);
-   
-
+    %}
 
 function disp_response(first_img_response, start_id, end_id)
     str_start = strcat(int2str(start_id), ' To ');
@@ -37,11 +48,16 @@ function disp_response(first_img_response, start_id, end_id)
     figure('Name', str_fig_name);
     for filter_num=start_id:end_id
         subplot(start_id,end_id,filter_num);
-        imshow(squeeze(first_img_response(:,:,filter_num)));
+        imshow(squeeze(first_img_response(:,:,filter_num) * 2));
     end
 
-
-
+function disp_filters(F)
+    for i=1:48
+        subplot(4,12,i);
+        imagesc(squeeze(F(:,:,i)));
+        colormap(gray);
+    end
+   
 function F=makeLMfilters()
 % Returns the LML filter bank of size 49x49x48 in F. To convolve an
 % image I with the filter bank you can either use the matlab function
