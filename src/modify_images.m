@@ -1,4 +1,4 @@
-function modified_images = modify_images(write_flag)
+function [modified_images,filenames] = modify_images(write_flag)
     [image_data,~,filenames, img_x, img_y, numcolors] = load_data('../pictures_data/complete3/',1);
     [~,total_images] = size(image_data);
     image_data = image_data.';

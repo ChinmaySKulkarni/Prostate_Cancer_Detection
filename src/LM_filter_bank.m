@@ -3,11 +3,11 @@ function LM_filter_bank()
     F = makeLMfilters();
     %disp_filters(F);
     disp('Got filters')
-    modified_images = modify_images(0);
+    [modified_images, filenames] = modify_images(0);
     [total_images,img_x,img_y,~] = size(modified_images);
     
-    %TODO: Remove
-    total_images = 1;
+    %Useful filter: 37
+    keep_filter(:,:) = F(:,:,37);
     
     gray_modified_images = zeros(total_images, img_x, img_y);
     %Convert the modified images to grayscale for LM filter bank to work.
@@ -17,38 +17,46 @@ function LM_filter_bank()
     %imshow(squeeze(gray_modified_images(1,:,:)));
     disp('Converted Modified RGB Images to Grayscale')
     
-    conv_x_dim = 904;
-    conv_y_dim = 1042;
-    response = zeros(total_images,conv_x_dim, conv_y_dim,48);
+    response = zeros(total_images,img_x, img_y);
     %Get the response of each filter for each image.
-    total_filters = 48;
     for i=1:total_images
         curr_img = squeeze(gray_modified_images(i,:,:));
-        for j=1:total_filters
-            response(i,:,:,j) = conv2(curr_img,F(:,:,j), 'valid');
-        end
+        response(i,:,:) = imfilter(curr_img,keep_filter(:,:), 'same');
     end
     disp('Got the reponse of each filter for each image')
     size(response)
-    %Display all the filter's responses for an image.
-    first_img_response = squeeze(response(1,:,:,:));
-    %disp_response(first_img_response,1,1);
-    for i=1:4:48
-        disp_response(first_img_response,i,i + 3);
-    end
+    img_num = 1;
+    specific_img_response = squeeze(response(img_num,:,:));
+    %specific_img_response = mat2gray(specific_img_response);
+    disp_response(specific_img_response, filenames(img_num));
+   
+    figure
+    imhist(specific_img_response);
+    specific_img_response = normalize(specific_img_response);
+    min(specific_img_response(:))
+    max(specific_img_response(:))
+    mean(specific_img_response(:))
+    %gray = graythresh(specific_img_response)
+    gray = 0.05;
+    epithelial_img = specific_img_response;
+    epithelial_img(specific_img_response >= gray) = 1;
+    epithelial_img(specific_img_response < gray) = 0;
+    size(epithelial_img)
+    figure
+    imagesc(squeeze(epithelial_img));
+    %colormap(gray);
+   
+function img = normalize(img)
+    [total_
 
-  
-function disp_response(first_img_response, start_id, end_id)
-    str_start = strcat(int2str(start_id), ' To ');
-    str_range = strcat(str_start, int2str(end_id));
-    str_fig_name = strcat('Image 1 Filter: ', str_range);
-    figure('Name', str_fig_name);
-    for filter_num=start_id:end_id
-        subplot(1,12,filter_num - start_id + 1);
-        imagesc(squeeze(first_img_response(:,:,filter_num)));
-        colormap(gray);
-    end
-
+%Display all the filter's responses for an image.
+function disp_response(specific_img_response, filename)
+    filename
+    name = strcat(' Filter # 37');
+    figure('Name', name);
+    imagesc(squeeze(specific_img_response(:,:)));
+    colormap(gray);
+    
 function disp_filters(F)
     for i=1:48
         subplot(4,12,i);
