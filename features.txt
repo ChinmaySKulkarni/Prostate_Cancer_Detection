@@ -1,0 +1,18 @@
+Lumen Features
+1. %age of lumen area as a percentage of entire image
+2. Number of lumen objects
+3. Size distribution of lumen objects (binning if area and then)
+4. Circularity of lumen objects (premiter)^2/area
+5. Eccentricity
+6. Variance in lumen object sizes 
+7. Number of different radii from the center
+
+Epithilial cells Features
+1. %age of image pixels that are epithilial cells
+2. %age of stroma pixels that are epithilial cells
+3. maximum epithilial density in stroma region 
+4. %age of image pixels  identified as epithilial cells around lumen boundary
+ 
+
+
+ 
