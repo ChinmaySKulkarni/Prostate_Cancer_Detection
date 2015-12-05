@@ -3,8 +3,8 @@ function [fraction_epithelial_in_boundary, fraction_epithelial_in_image] = proce
 	se = strel('disk',30);
 	afterOpening = imdilate(lumenImage,se);
 	lumen_boundary = afterOpening - lumenImage;
-    figure;imshow(lumenImage);
-	figure;imshow(lumen_boundary);
+    %figure;imshow(lumenImage);
+	%figure;imshow(lumen_boundary);
 	epithelial_in_lumen_boundary = epithelial_image(logical(lumen_boundary));
 
 	CC = bwconncomp(epithelial_in_lumen_boundary);
