@@ -3,7 +3,7 @@ function LM_filter_bank()
     F = makeLMfilters();
     %disp_filters(F);
     disp('Got filters')
-    [modified_images, filenames] = modify_images(0);
+    [modified_images, filenames] = modify_images(0,'complete3/');
     [total_images,img_x,img_y,~] = size(modified_images);
     
     %Useful filter: 37
@@ -25,29 +25,38 @@ function LM_filter_bank()
     end
     disp('Got the reponse of each filter for each image')
     size(response)
-    img_num = 1;
-    specific_img_response = squeeze(response(img_num,:,:));
-    %specific_img_response = mat2gray(specific_img_response);
-    disp_response(specific_img_response, filenames(img_num));
-   
-    figure
-    imhist(specific_img_response);
-    specific_img_response = normalize(specific_img_response);
-    min(specific_img_response(:))
-    max(specific_img_response(:))
-    mean(specific_img_response(:))
-    %gray = graythresh(specific_img_response)
-    gray = 0.05;
-    epithelial_img = specific_img_response;
-    epithelial_img(specific_img_response >= gray) = 1;
-    epithelial_img(specific_img_response < gray) = 0;
-    size(epithelial_img)
-    figure
-    imagesc(squeeze(epithelial_img));
-    %colormap(gray);
-   
+    
+    for img_num = 1:total_images
+        specific_img_response = squeeze(response(img_num,:,:));
+        specific_img_response = normalize(specific_img_response);
+        %specific_img_response = mat2gray(specific_img_response);
+        %disp_response(specific_img_response, filenames(img_num));
+
+        %figure
+        %imhist(specific_img_response);
+
+        H = vision.LocalMaximaFinder('Threshold', 0, 'MaximumNumLocalMaxima', 10000);
+        locations = step(H, 1 - specific_img_response);
+        lin_ind = sub2ind([img_x,img_y], locations(:,2), locations(:,1));
+        epithelial_img = zeros(img_x,img_y);
+        epithelial_img(lin_ind) = 1;
+        %figure
+        imagesc(squeeze(epithelial_img));
+        colormap(gray);
+        return
+        
+        %name = strcat('../epithelial_complete4/', filenames{img_num})
+        %imwrite(epithelial_img,name);
+    end
+    
+  
 function img = normalize(img)
-    [total_
+    [total_imgs, img_x, img_y] = size(img);
+    img = img(:);
+    minval = min(img);
+    maxval = max(img);
+    img = (img - minval)/(maxval - minval);
+    img = reshape(img, total_imgs, img_x, img_y);
 
 %Display all the filter's responses for an image.
 function disp_response(specific_img_response, filename)
