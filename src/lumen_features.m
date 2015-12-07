@@ -1,10 +1,13 @@
-function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,imgy)
+function [lumen_features] = lumen_features(lumen_images,filenames,epithileal_images,imgx,imgy)
+% Creates the following basic features from the segmented lumen images :
     
+    pruned_image_path = '../new_pictures_data/pruned_data4/';
+    mkdir(pruned_image_path);
+
     [~, numimages]=size(lumen_images);
-    
     % image gloabl features
-    num_lumen_objects = zeros(1,numimages);
-    fraction_lumen_area = zeros(1,numimages);
+    num_lumen_objects = [];
+    fraction_lumen_area = [];
     % size based features are average right now, will change
     % to distribution later
     avg_eccentricity = [];
@@ -15,6 +18,7 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
     var_circularity = [];
     avg_lumen_radius = [];
     var_lumen_radius = [];
+    % epithilial cell based features
     fraction_ep_bound = [];
     fraction_ep_image = [];
     
@@ -28,8 +32,6 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
     mask_image = im2bw(mask_image,0.5);
     mask_image = 1-mask_image;
     mask_image = logical(mask_image);
-    
-    
     
     for i=1:numimages
         image = lumen_images(:,i);
@@ -46,7 +48,7 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
         area_thresh = (imgx*imgy/4)-(pi*imgx*imgx/16);
         num_remove = 0;
         for k=numel(lumen_area):-1:1
-            if lumen_area(k) > area_thresh 
+            if lumen_area(k) > 0.9*area_thresh 
                 num_remove = num_remove+1;
             end
         end
@@ -55,7 +57,8 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
         
         % recalculate the connected components
         %figure; 
-        %imshow(image);
+        pruned_write_path = strcat(pruned_image_path,filenames{i});
+        imwrite(image,pruned_write_path);
         cc = bwconncomp(image);
         stats = regionprops(cc,'Area','Centroid','Eccentricity','Perimeter','PixelIdxList','Extrema','Image');
         numlumen = numel(stats);
@@ -71,7 +74,7 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
             % get the lumen boundary and calculate the average radius of a 
             % lumen object
             boundary_image = zeros(imgx,imgy);
-            boundary_image(stats(i).PixelIdxList) = 1;
+            boundary_image(stats(j).PixelIdxList) = 1;
             perim_image = bwperim(boundary_image);
             boundary_pix_idx = find(perim_image==1);
             [boundary_pix_y, boundary_pix_x] = ind2sub(size(perim_image),boundary_pix_idx);
@@ -82,7 +85,11 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
             l_radius_stats(j) = avg_radius;
         end
 
-        % add to size features
+        % image global features
+        num_lumen_objects = [num_lumen_objects,numlumen];
+        fraction_lumen_area = [fraction_lumen_area, sum(l_size_stats(:))/(imgx*imgy)];
+        
+        % lumen size features
         avg_lumen_size = [avg_lumen_size mean(l_size_stats(:))];
         var_lumen_size = [var_lumen_size, var(l_size_stats(:))];
         avg_eccentricity = [avg_eccentricity, mean(l_ecc_stats(:))];
@@ -115,3 +122,5 @@ function [lumen_features] = lumen_features(lumen_images,epithileal_images,imgx,i
                         fraction_ep_image
                      ];
 end
+
+    

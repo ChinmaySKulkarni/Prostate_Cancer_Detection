@@ -1,4 +1,4 @@
-function [class_probabilities, binary_lumen_image] = colorBasedSegmentation(training_pixels, class_labels, image)
+function [class_probabilities, binary_lumen_image] = colorBasedSegmentation(training_pixels, class_labels, image, image_filename)
 
 
 	neighborhood_parameter = 10;
@@ -26,6 +26,7 @@ function [class_probabilities, binary_lumen_image] = colorBasedSegmentation(trai
 
 	class_probabilities = reshape(class_probabilities, m, n, num_classes);
 	lumen_image = class_probabilities(:,:,2);
+    imwrite(lumen_image,image_filename);
 	s = strel('ball', 4, 0.3, 0);
 	lumen_closed = imclose(lumen_image, s);
 	binary_lumen_image = lumen_closed;

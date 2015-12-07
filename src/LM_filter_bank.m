@@ -1,9 +1,20 @@
 function LM_filter_bank()
+    % directories to read and write from
+    epithelial_out_dir = '../pictures_data/epithelial_complete3/';
+    epithelial_filter_out_dir = '../pictures_data/epithelial_filter_complete3/';
+    input_dir = '../pictures_data/complete3/';
+    modified_dir_name = '../pictures_data/modified3/';
+    
+    % create the output directories
+    mkdir(epithelial_out_dir);
+    mkdir(epithelial_filter_out_dir);
+    mkdir(modified_dir_name);
+    
     %Get the 48 filters for the LM filter bank.
     F = makeLMfilters();
     %disp_filters(F);
     disp('Got filters')
-    [modified_images, filenames] = modify_images(0,'complete3/');
+    [modified_images, filenames] = modify_images(1,input_dir,modified_dir_name);
     [total_images,img_x,img_y,~] = size(modified_images);
     
     %Useful filter: 37
@@ -35,18 +46,22 @@ function LM_filter_bank()
         %figure
         %imhist(specific_img_response);
 
-        H = vision.LocalMaximaFinder('Threshold', 0, 'MaximumNumLocalMaxima', 10000);
+        H = vision.LocalMaximaFinder('Threshold', 0.7, 'MaximumNumLocalMaxima', 2000,'NeighborhoodSize',[15 21]);
         locations = step(H, 1 - specific_img_response);
         lin_ind = sub2ind([img_x,img_y], locations(:,2), locations(:,1));
+        numel(lin_ind)
         epithelial_img = zeros(img_x,img_y);
         epithelial_img(lin_ind) = 1;
+        max(max(specific_img_response(lin_ind)))
         %figure
         imagesc(squeeze(epithelial_img));
         colormap(gray);
-        return
+        %return
         
-        %name = strcat('../epithelial_complete4/', filenames{img_num})
-        %imwrite(epithelial_img,name);
+        name = strcat(epithelial_out_dir, filenames{img_num})
+        imwrite(epithelial_img,name);
+        filt_image_name = strcat(epithelial_filter_out_dir,filenames{img_num});
+        imwrite(specific_img_response,filt_image_name);
     end
     
   
