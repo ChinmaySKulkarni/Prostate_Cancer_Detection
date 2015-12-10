@@ -240,3 +240,21 @@ Try out the following maybe [TODO]:
   (basically segment the image based on object distribution) and then create features
   out of that and then apply the classifier.
 
+
+## TODO
+
+**NOTE: Get accuracy after applying each of the below steps (after adding each feature) incrementally. This will help us to identify which features are actually helping and which are actually
+messing up the accuracy.**
+
+1. Add Haralick Features (try with different number of features).
+2. Histrogram shift towards blue for cancerous images. (Use KL-Divergence between image histogram and blue channel histrogram to determine this).
+3. Background removal using successive closing operations.
+4. Better segmentation for Epithelial Cells: Use K-means/DBScan for epithelial cell detection and try for different k values/(minPts and epsilon values).
+ 1. Do parameter tuning to get best number of k and minPts/epsilon by comparing silhouette values (see kmeans man page for matlab) or basically by using that k for which
+    you get the highest value of intra-cluster similarity vs. inter-cluster similarity.
+ 2. To figure out which cluster belongs to epithelial cells, simple dot product/other similarity measure can be used with a set of manually chosen images that are epithelial cells.
+5. Try better segmentation for Lumen.
+6. Try representing the images in higher dimensional space (kernel SVM), and apply PCA in that higher dimensional space(?). Alternatively, we can try applying kernel PCA
+at the original dimensionality of the image data.
+7. Try other classifiers apart from CART.
+
