@@ -5,7 +5,8 @@ function [class_probabilities, binary_lumen_image] = colorBasedSegmentation(trai
 	if ischar(image)
 		image = imread(image);
 		image = image(:,:,1:3);
-	end
+    end
+    image = uint8(255*image);
 	num_classes = length(unique(class_labels));
 	classes = sort(unique(class_labels));
 	[m, n, ch] = size(image)
@@ -30,6 +31,8 @@ function [class_probabilities, binary_lumen_image] = colorBasedSegmentation(trai
 	binary_lumen_image = lumen_closed;
 	binary_lumen_image (lumen_closed <= 0.2) = 1;
 	binary_lumen_image (lumen_closed >0.2) = 0;
+    s = strel('disk', 4, 0);
+    binary_lumen_image = imdilate(binary_lumen_image, s);
 
 
 end

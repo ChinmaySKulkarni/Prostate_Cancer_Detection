@@ -21,10 +21,13 @@ class_labels = [1*ones(size(lumen_pixels,1),1);2*ones(size(epithelial_pixels,1),
 
 
 
-image_files = dir(fullfile(input_dir,'*.tif*'));
-for i = 1:length(image_files)
-	filepath = strcat(input_dir,image_files(i).name);
-	[class_probabilities, binary_lumen_image] = colorBasedSegmentation(training_pixels, class_labels, filepath);
-	imwrite(binary_lumen_image, strcat(output_dir, image_files(i).name));
+
+
+[ image_data, ~, filenames, imgx, imgy, numcolors] = load_data( input_dir, 1);
+
+for i = 1:length(filenames)
+	im = reshape(image_data(:,i), imgx, imgy, numcolors);
+	[class_probabilities, binary_lumen_image] = colorBasedSegmentation(training_pixels, class_labels, im);
+	imwrite(binary_lumen_image, strcat(output_dir, filenames{i}));
 end
 
