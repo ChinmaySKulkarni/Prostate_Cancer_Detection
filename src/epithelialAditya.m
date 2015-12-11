@@ -1,7 +1,7 @@
-[image_data,y_labels,filename, imgx, imgy, numcolors] = load_data('../modified_complete3/',1);
+[image_data,y_labels,filename, imgx, imgy, numcolors] = load_data('../new_pictures_data/modified_data4/',1);
 
-numclusters = 10;
-basepath_filter_clusters = strcat('../modified_complete3_kmeans_LMF_',int2str(numclusters),'/');
+numclusters = 5;
+basepath_filter_clusters = strcat('../new_pictures_data/kmeans_LMF_',int2str(numclusters),'/');
 mkdir(basepath_filter_clusters);
 
 numimages = size(image_data,2);
@@ -33,10 +33,6 @@ for i=1:numimages
     % will convert each pixel into 8-dimensional. write 8-dim clusters
     filt_i = getLMfilterResponse(image_g,filters);
     idx = kmeans(filt_i,numclusters,'MaxIter',numiters);
-    %{
-    [s,~] = silhouette(filt_i,idx,'cityblock');
-    goodness_vals = [goodness_vals,mean(s)];
-    %}
     cluster_image = reshape(idx,imgx,imgy);
     imwrite(cluster_image,cmap,strcat(basepath_filter_clusters,filename{i}));
     
@@ -48,8 +44,8 @@ for i=1:numimages
     imwrite(cluster_image,cmap,strcat(basepath_raw_clusters,filename{i}));
     %}
 end
-numclusters
-%goodness = mean(goodness_vals)
+
+
 
 % spectral clustering based approach, didn't work because computationally
 % infeasible.
