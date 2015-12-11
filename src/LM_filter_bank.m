@@ -1,9 +1,9 @@
 function LM_filter_bank()
     % directories to read and write from
-    epithelial_out_dir = '../pictures_data/epithelial_complete3/';
-    epithelial_filter_out_dir = '../pictures_data/epithelial_filter_complete3/';
-    input_dir = '../pictures_data/complete3/';
-    modified_dir_name = '../pictures_data/modified3/';
+    epithelial_out_dir = '../new_pictures_data/epithelial_data4/';
+    epithelial_filter_out_dir = '../new_pictures_data/epithelial_filter_data4/';
+    input_dir = '../new_pictures_data/data4/';
+    modified_dir_name = '../new_pictures_data/modified_data4/';
     
     % create the output directories
     mkdir(epithelial_out_dir);

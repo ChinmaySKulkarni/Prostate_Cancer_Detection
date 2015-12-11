@@ -23,6 +23,7 @@ function [lumen_features] = lumen_features(lumen_images,filenames,epithileal_ima
     fraction_ep_image = [];
     
     % construct the mask image
+    %{
     mask_image = ones(imgx,imgy);
     mindim = min([imgx,imgy]);
     params = floor([imgy/2, imgx/2, mindim/2]);
@@ -32,6 +33,7 @@ function [lumen_features] = lumen_features(lumen_images,filenames,epithileal_ima
     mask_image = im2bw(mask_image,0.5);
     mask_image = 1-mask_image;
     mask_image = logical(mask_image);
+    %}
     
     for i=1:numimages
         image = lumen_images(:,i);

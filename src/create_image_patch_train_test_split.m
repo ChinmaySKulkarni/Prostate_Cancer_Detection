@@ -17,7 +17,7 @@ image_filenames = [filenames_cancer, filenames_no_cancer];
 numimages = numel(unique_image_names);
 % to enable/disable random permutationn of the images while selection for
 % trainign, change this 
-unique_image_names = unique_image_names(randperm(numimages));
+unique_image_names = unique_image_names;
 split_idx = floor(0.7*numimages);
 train_image_names = unique_image_names(1:split_idx);
 
