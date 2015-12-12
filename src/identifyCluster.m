@@ -1,10 +1,13 @@
-function [matched_cluster_image] = identifyCluster(seed_cluster_image,input_cluster_image,...
-    seed_filt_images,input_filt_images,numclusters,seed_cluster_no)
-% Match the seed cluster to the closest cluster in the input image
-    [imgx, imgy] = size(seed_cluster_image);
-    seed_image = reshape(seed_filt_images,imgx*imgy,8);
-    seed_pts = seed_image(seed_cluster_image==seed_cluster_no,:);
-    filt_image = reshape(input_filt_images,imgx*imgy,8);
+function [matched_cluster_image] = identifyCluster(seed_cluster_mask,input_cluster_image,...
+    seed_filt_image,input_filt_image,numclusters)
+% Match the seed cluster to the closest cluster in the input image. For a
+% given binary seed cluster image, its filter representation, and a given target cluster
+% image and its filter representation, returns the cluster that is closest
+% to the seed cluster seed_cluster_no in the form of a binary image 
+    [imgx, imgy] = size(seed_cluster_mask);
+    seed_image = reshape(seed_filt_image,imgx*imgy,8);
+    seed_pts = seed_image(seed_cluster_mask==1,:);
+    filt_image = reshape(input_filt_image,imgx*imgy,8);
     matched_cluster = 0;
     min_cluster_dist = 0;
     % For every cluster in the image

@@ -1,9 +1,9 @@
 [image_data,y_labels,filename, imgx, imgy, numcolors] = load_data('../new_pictures_data/modified_data4/',1);
 
 numclusters = 5;
-basepath_filter_clusters = strcat('../new_pictures_data/kmeans_LMF_test',int2str(numclusters),'/');
+basepath_filter_clusters = strcat('../new_pictures_data/kmeans_LMF_',int2str(numclusters),'/');
 mkdir(basepath_filter_clusters);
-basepath_clusters_matfiles = strcat('../new_pictures_data/kmeans_LMF_test',int2str(numclusters),'/cluster_matfiles/');
+basepath_clusters_matfiles = strcat('../new_pictures_data/kmeans_LMF_',int2str(numclusters),'/cluster_matfiles/');
 mkdir(basepath_clusters_matfiles);
 
 numimages = size(image_data,2);
