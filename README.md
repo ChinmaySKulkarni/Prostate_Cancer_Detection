@@ -35,7 +35,7 @@ regular arrangement of gland units.
 4. Use stain colors to get the different types of glands: White is lumen, pink is cytoplasm, purple dots are nuclei.
 5. Benign images have large and irregular lumen regions, higher grade cancers have small, narrow lumens.
 6. Use a color histogram to identify lumen glands (should be white and be surrounded by pink and purple).
-7. Gleason grade 4 distributions show areas that are smaller and more uniform compared with benign epithelium, which has a wide range of large gland and lumen areas. 
+7. Gleason grade 4 distributions show areas that are smaller and more uniform compared with benign epithelium, which has a wide range of large gland and lumen areas.
    Thus, smaller and more uniform glands are more indicative of grade.
 
 ## Possibly try the following:
@@ -159,7 +159,7 @@ List the various methods tried and the results from each of the methods
      Recall : ~0.3
      F-score : 0.3-0.4
      Per Image Prediction
-     Total      Labelled 
+     Total      Labelled
      Patches    Cancerous
      63         4
      64         41
@@ -173,9 +173,9 @@ List the various methods tried and the results from each of the methods
      60         6
      63         32
      62         8
-     
-    predicted_stats    
-         
+
+    predicted_stats
+
     20
     17
     17
@@ -213,23 +213,23 @@ List the various methods tried and the results from each of the methods
      9
      9
     11
-    13    
+    13
 
     But between successive runs there is a lot more variation.
 
-   - Used NMF dimensionality reduction on the data, using the first 100 analysis 
+   - Used NMF dimensionality reduction on the data, using the first 100 analysis
      features and with the same prediction as above but very disappointing results
 
 [TODOs in this approach]
 
    - Use textre features extracted from [Reference paper here] in addition to
      the features obtained after dimensionality reduction. This did not yield
-     significant improvement in results. 
-     
+     significant improvement in results.
+
    - Use Gaussian Pyramid subsampled patches for the GMM classifier. Subsampled
-     at levels 1 and 2. However, with the reduction in pixels,No longer possible to use 
+     at levels 1 and 2. However, with the reduction in pixels,No longer possible to use
      GMM classifer.
-          
+
 Try out the following maybe [TODO]:
 - Gray level co-occurence matrix for detection of texture to detect epithilial
   cells
@@ -246,15 +246,15 @@ Try out the following maybe [TODO]:
 **NOTE: Get accuracy after applying each of the below steps (after adding each feature) incrementally. This will help us to identify which features are actually helping and which are actually
 messing up the accuracy.**
 
-1. Add Haralick Features (try with different number of features).
-2. Histrogram shift towards blue for cancerous images. (Use KL-Divergence between image histogram and blue channel histrogram to determine this).
-3. Background removal using successive closing operations.
+1. ~~Add Haralick Features (try with different number of features).~~
+2. ~~Histrogram shift towards blue for cancerous images. (Use KL-Divergence between image histogram and blue channel histrogram to determine this).~~
+3. ~~Background removal using successive closing operations.~~
 4. Better segmentation for Epithelial Cells: Use K-means/DBScan for epithelial cell detection and try for different k values/(minPts and epsilon values).
  1. Do parameter tuning to get best number of k and minPts/epsilon by comparing silhouette values (see kmeans man page for matlab) or basically by using that k for which
     you get the highest value of intra-cluster similarity vs. inter-cluster similarity.
  2. To figure out which cluster belongs to epithelial cells, simple dot product/other similarity measure can be used with a set of manually chosen images that are epithelial cells.
 5. Try better segmentation for Lumen.
-6. Try representing the images in higher dimensional space (kernel SVM), and apply PCA in that higher dimensional space(?). Alternatively, we can try applying kernel PCA
-at the original dimensionality of the image data.
-7. Try other classifiers apart from CART.
+6. ~~Try representing the images in higher dimensional space (kernel SVM), and apply PCA in that higher dimensional space(?). Alternatively, we can try applying kernel PCA
+at the original dimensionality of the image data.~~
+7. ~~Try other classifiers apart from CART.~~ SVM with Gaussian Kernel (84% accuracy).
 
