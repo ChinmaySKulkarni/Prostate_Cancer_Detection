@@ -1,10 +1,13 @@
 [image_data,y_labels,filename, imgx, imgy, numcolors] = load_data('../new_pictures_data/modified_data4/',1);
 
 numclusters = 5;
-basepath_filter_clusters = strcat('../new_pictures_data/kmeans_LMF_',int2str(numclusters),'/');
+basepath_filter_clusters = strcat('../new_pictures_data/kmeans_LMF_test',int2str(numclusters),'/');
 mkdir(basepath_filter_clusters);
+basepath_clusters_matfiles = strcat('../new_pictures_data/kmeans_LMF_test',int2str(numclusters),'/cluster_matfiles/');
+mkdir(basepath_clusters_matfiles);
 
 numimages = size(image_data,2);
+
 numiters = 500;
 cmap = colormap(jet);
 n = size(cmap,1);
@@ -22,52 +25,28 @@ filters = cat(3,filters,F(:,:,45));
 filters = cat(3,filters,F(:,:,47));
 filters = cat(3,filters,F(:,:,48));
 
-goodness_vals = [];
+% store the filtered images for cluster matching later
+filt_images = [];
+cluster_images  = [];
+
+numimages = 5;
 
 for i=1:numimages
     image = image_data(:,i);
     image = reshape(image,imgx,imgy,numcolors);
     % write the filtered clusters;
-    image_g = rgb2gray(image);
-    
+    image_g = rgb2gray(image);    
     % will convert each pixel into 8-dimensional. write 8-dim clusters
     filt_i = getLMfilterResponse(image_g,filters);
+    filt_images = cat(4,filt_images,filt_i);
     idx = kmeans(filt_i,numclusters,'MaxIter',numiters);
     cluster_image = reshape(idx,imgx,imgy);
+    cluster_images = cat(3,cluster_images,cluster_image);
+    % write the cluster image for visual inspection
     imwrite(cluster_image,cmap,strcat(basepath_filter_clusters,filename{i}));
-    
-    % write the raw clusters
-    %{
-    image = reshape(image,imgx*imgy,numcolors);
-    idx = kmeans(image,numclusters);
-    cluster_image = reshape(idx,imgx,imgy);
-    imwrite(cluster_image,cmap,strcat(basepath_raw_clusters,filename{i}));
-    %}
 end
-
-
-
-% spectral clustering based approach, didn't work because computationally
-% infeasible.
-% compute the affinity matrix (getting too big for an image,
-% impractical)!!
-%{
-numpoints = size(trans_data,1);
-affinity = zeros(numpoints,numpoints);
-sigma = 1;
-for i=1:numpoints
-    for j=1:numpoints
-        v1 = trans_data(i,:);
-        v2 = trans_data(j,:);
-        v = v1-v2;
-        v_mod = v*v';
-        affinity(i,j) = exp(-v_mod);
-    end
-end
-
-% calculate the cluster centers;
-[C,~,~] = SpectralClustering(affinity,8,3);
-C;
-%}
-
+% save the cluster images and the filter images as matfiles
+save(strcat(basepath_clusters_matfiles,'/cluster_images.mat'),'cluster_images');
+save(strcat(basepath_clusters_matfiles,'/filt_images.mat'),'filt_images');
+save(strcat(basepath_clusters_matfiles,'/filename.mat'),'filename');
 
