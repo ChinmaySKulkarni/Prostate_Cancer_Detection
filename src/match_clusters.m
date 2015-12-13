@@ -1,5 +1,7 @@
 % match the seed cluster in all the other images. Must be run after
-% epithelialAditya has been run.
+% epithelialAditya has been run. This file reads the cluster and filter
+% matfiles for each individual image and tries to match them against the
+% seed cluster image. 
 
 % load the cluster images and the filtered images from matfiles
 
@@ -36,6 +38,13 @@ for i=1:numfiles
   load(strcat(basepath_clusters_matfiles,cluster_filename));
   load(strcat(basepath_clusters_matfiles,filt_filename));
   if strcmp(seed_cluster_image_name,image_file_name)~=1
+     % identifyCluster tries to do cluster matching, which is
+     % computatationaly very expensive, instead I have implemented a more
+     % simple size based approach in identifyEpithelialCluster (the code for
+     % seed cluster etc, is therefore not relevant to that but I haven't cchanged it yet
+     % replace this function with some other function that takes in the cluster
+     % image and/or filter image and returns the mask for the appropriate
+     % cluster.
      %matched_cluster_mask = identifyCluster(seed_cluster_mask,cluster_image,...
      %seed_filt_img,filt_image,8);
      matched_cluster_mask = identifyEpithelialCluster(cluster_image,8);
