@@ -13,7 +13,7 @@ function [fraction_epithelial_in_boundary, fraction_epithelial_in_image] = proce
 
 
 	CC = bwconncomp(epithelial_image);
-	numEpithelialInImage = numel(CC.PixelIdxList);
+	numEpithelialInImage = sum(epithelial_image(:));
 	fraction_epithelial_in_image = numEpithelialInImage/numel(epithelial_image);
 
 end
