@@ -21,23 +21,50 @@ We collected a dataset comprising of 149 stained tissue images in collaboration 
 
 The dataset has a nearly even split among the classes with 76 images belonging to `cancerous' class and remaining 73 `non-cancerous'. Another point to note over here is that the tissues in these images were stained in two separate batches, so the dataset may not be indicative of the variability in staining. Note that this dataset is significantly bigger than the datasets used in other works - indeed \cite{naik2007gland} uses a dataset of 44 images for their approach.
 
-\subsection{Patch-Level Features}
-In this section, we provide the results for the patch-level feature extraction and classification.
 
-\subsection{Image-Level Features}
+\subsection{Results}
 In this section, we discuss the results for the different features we extract from the images. The classifiers we try out on the extracted features are 
 \begin{itemize}
 \item Support Vector Machine with Gaussian Kernel (\textbf{\texttt{SVM}})
 \item K-nearest neighbor classifier (\textbf{\texttt{KNN}})
 \item Decision Tree classifier (\textbf{\texttt{DTREE}})
 \end{itemize}
-For each of these classifiers, 10-fold cross-validation was performed. 
+For each of these classifiers, 10-fold cross-validation was performed. The results are summarised in Table~\ref{table:accuracy}. As can be seen from the table, SVM classifier with lumen and epithelial features performs the best, resulting in an accuracy of 81.2\%. Further, the LocalMinima technique of finding the epithelial features works the best. 
 
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|c| }
 \hline
  & \textbf{\texttt{SVM}} & \textbf{\texttt{KNN}} & \textbf{\texttt{DTREE}} \\ \hline
 \textbf{\texttt{LocalMin}} & 81.2\% & 69.8\% & 71.8\% \\ \hline
-\textbf{\texttt{kMeans}} &  4 & 5 & 6 \\ \hline
-\textbf{ \texttt{CircleConv}} & 77.9\% & 73.2\% & 70.5\% \\ \hline
+\textbf{\texttt{kMeans}} &   &  &  \\ \hline
+\textbf{ \texttt{HoughTrans}} & 77.9\% & 73.2\% & 70.5\% \\ \hline
 \end{tabular}
+\caption{\label{table:accuracy}Accuracies of different approaches}
+\end{table}
 
+The ROC curves for local minima (\textbf{\texttt{LocalMin}}), Elliptical (\textbf{\texttt{kMeans}}) and Hough transform (\textbf{\texttt{HoughTrans}}) based features are shown in Figures~\ref{fig:ROC_localMin} and \ref{fig:ROC_circleConv} respectively. The area under curve further shows effectiveness of our approach. 
+
+
+\begin{figure}
+\includegraphics[scale=0.2]{figs/ROC_circleConv.pdf}
+\caption{\label{fig:ROC_circleConv}ROC curve for Hough Transform based  epithelial features}
+\end{figure}  
+
+\begin{figure}
+\includegraphics[scale=0.2]{figs/ROC_localMin.pdf}
+\caption{\label{fig:ROC_localMin}ROC curve for local minima based epithelial based features}
+\end{figure}  
+
+Finally, we also note the precision and recall obtained for detecting cancer in these images using local minima based epithelial features with SVM classifier. Our approach has a high recall of 86.4\%, and a reasonable recall of 75\%.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c| }
+\hline
+ & \textbf{\texttt{SVM}} & \textbf{\texttt{KNN}} & \textbf{\texttt{DTREE}} \\ \hline
+\textbf{Precision} & 86.4\% & 71.8\% & 68.7\% \\ \hline
+\textbf{Recall} & 75\% & 73.7\%  & 75\% \\ \hline
+\end{tabular}
+\caption{\label{table:PrecisionRecall}Precision and Recall Values for different classifiers when epithelial features are extracted based on local minima technique}
+\end{table}
