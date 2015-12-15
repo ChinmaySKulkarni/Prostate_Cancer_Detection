@@ -1,2 +1,21 @@
 \section{Patch-Based Approaches}
 \label{sec:patch_based_approaches}
+We first tried to process the images on a patch level. Our hypothesis was that certain histological features such as concentration of epithelial cells , percentage of stroma region can be calculated for local regions in the input images and image patches can be classified as belonging to malignant or benign tissue based on the degree to which they exhibit these features. This approach also helped us increase the amount of data that we we used for training significantly. After splitting the images into patches, we removed the patches belonging to the corner regions in each image by matching them against a template patch of the boundary region using dot product and removing those patches that gave a match of more than 90 percent. We selected 24 images (11 cancerous and 13 non-cancerous) from the dataset and used their patches for training. We manually labelling patches as belonging to either cancerous or non-cancerous regions, classifying only those patches as cancerous where could confidently asses the presence of strong malignant tissue features. 
+
+\subsection{Patch Dimensionality Analysis}
+After extracting the patch data, we tried performed PCA, NMF dimensionality reduction on the patches.After performing PCA on 50 $\times$ 50 $\times$ 3 dimensional patches, we found that the first 100 dimensions explained 99.7\% of the variance. The inspection of the the NMF components did not yield any significant intuition.
+
+
+\subsection{Addition of Texture featues}
+Under the hypothesis that with patches of size 50x50, each patch will be relatively homogeneous in texture and since the epithelial cell distribution in cancerous regions produces a distinct texture as compared to cancerous regions, we added texture features to each patch in addition to the PCA features. We used the SFTA texture features described in [] since they are calculated using fractal analysis of the entire patch image and are not affected by the shade, brightness and intensity of the patch images.
+
+
+\subsection{Classification of Patches Using Gaussian Mixture Models}
+To get a more accurate labelling of the patches on top of our manual labelling, we trained two Gaussian Mixture Models, one for each class (cancerous and non-cancerous) after projecting the labelled patches to 100 dimensions using PCA. We then used the two trained Gaussian Mixture Models, weighted together with their respective class prior probabilities for classifying all the training patches again as cancerous and non-cancerous. Post-training, we obtained the distribution of patches labelled as cancerous across the 24 labelled images and calculated the average number of cancerous patches in malignant and benign tissue images. We took the mean of these numbers as the threshold number of patches for classifying a tissue image as cancerous.
+
+We then used the trained GMM classifier to predict the patch labels on the remaining unseen dataset and calculated the number of patches predicted as cancerous in each image. Following this, we classified each image as cancerous or non-cancerous according to the threshold calculated previously.This approach did not produce very encouraging results as we were able to classify very few images from the unseen dataset as malignant. 
+
+
+
+ 
+
