@@ -1,2 +1,22 @@
 \section{Evaluation}
 \label{sec:evaluation}
+
+\subsection{Dataset}
+We collected a dataset comprising of 149 stained tissue images in collaboration with pathologists. The images are taken at a magnification of $10\times$, and are all scaled to a resolution of $1000\times 1000$. Each image in the dataset has been marked as `cancerous' or `non-cancerous' by a pathologist. Some sample images from the dataset are shown in Figure~\ref{fig:TissueImageExample}.
+
+\begin{figure}
+\includegraphics[width=2.0cm]{figs/145_green.pdf}
+\includegraphics[width=2.0cm]{figs/93_red.pdf}
+\includegraphics[width=2.0cm]{figs/130_green.pdf}
+\includegraphics[width=2.0cm]{figs/87_red.pdf}
+\includegraphics[width=2.0cm]{figs/63_green.pdf}
+\includegraphics[width=2.0cm]{figs/41_red.pdf}
+\includegraphics[width=2.0cm]{figs/108_green.pdf}
+\includegraphics[width=2.0cm]{figs/109_red.pdf}
+\caption{Stained tissue images in the dataset}
+\label{fig:TissueImageExample}
+
+\end{figure}  
+  
+
+The dataset has a nearly even split among the classes with 76 images belonging to `cancerous' class and remaining 73 `non-cancerous'. Another point to note over here is that the tissues in these images were stained in two separate batches, so the dataset may not be indicative of the variability in staining.
