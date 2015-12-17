@@ -1,13 +1,13 @@
 \section{Classification Using Image-Level Features}
 The approaches using patch-based features failed to capture features that spanned multiple patches and which were representative of global characteristics of the images. 
 In order to capture these characteristics, it was necessary to segment the images to separate out components that corresponded to epithelial cells and lumen glands. 
-Once these components were extracted from each image, features specific to each component could then be constructed. Parts of the image corresponding to stroma were not very distinctive features and thus we did not extract stroma regions.
+Once these components were extracted from each image, features specific to each component could then be constructed. Parts of the images corresponding to the stroma regions were not very distinctive features and thus we chose not to extract features based on stroma regions.
 
 \subsection{Image Segmentation}
 
 \subsubsection{Lumen Gland Segmentation}
 
-In order to detect lumen glands from each image, a k-Nearest Neighbors classifier was trained using 1800 pixels manually labelled from different components of the image. This training set consisted of an equal number of pixels that belonged to either stroma, lumen glands and epithelial cells. For each pixel in the image, we found its nearest neighbors in the RGB color space. Based on the distance in the color space of each pixel's neighborhood from pixels corresponding to stroma and epithelial cells, we assigned a probability of belonging to stroma to each pixel. Pixels that had probabilities less than a threshold (< 0.2) were thus classified as being part of lumen glands and the resultant images were converted to binary images indicating whether a pixel belonged to a lumen gland or not. This approach also detected the edges of the image as lumen glands since they have similar color intensities as lumen objects. Thus, the largest connected components in the resultant lumen segmented images were discarded as these belonged to image edges. Finally, lumen glands were smoothed out through dilation using a disk structuring element.
+In order to detect lumen glands from each image, a k-Nearest Neighbors classifier was trained using 1800 pixels manually labelled from different components of the image. This training set consisted of an equal number of pixels that belonged to either stroma, lumen glands or epithelial cells. For each pixel in the image, we found its nearest neighbors in the RGB color space. Based on the distance in the color space of each pixel's neighborhood from pixels corresponding to stroma and epithelial cells, we assigned a probability of belonging to stroma to each pixel. Pixels that had probabilities less than a threshold (< 0.2) were thus classified as being part of lumen glands and the resultant images were converted to binary images indicating whether a pixel belonged to a lumen gland or not. This approach also detected the edges of the image as lumen glands since they have similar color intensities as lumen objects. Thus, the largest connected components in the resultant lumen segmented images were discarded as these belonged to image edges. Finally, lumen glands were smoothed out through dilation using a disk structuring element.
 
 \subsubsection{Epithelial Cell Segmentation}
 
@@ -16,30 +16,51 @@ Various approaches were tried in order to extract pixels corresponding to epithe
 \begin{enumerate}
 
 \item \textbf{Local Minima Approach:}\\
-We convolved the image with a Laplacian of Gaussian filter observed high responses for regions corresponding to epithelial cells due to their circular shape. Subsequently, local maxima points were detected in a small window size for these high response pixels and only the largest response values were retained. The resulting binary image thus clearly segmented pixels corresponding to epithelial cells. The problem with this approach was that it failed to capture the connected components corresponding to epithelial cells and only represented these cells as single pixel responses. Two more approaches were thus tried which avoided this problem.
+We convolved the image with a Laplacian of Gaussian filter and observed high responses for regions corresponding to epithelial cells due to their circular shape. Subsequently, local maxima points were detected in a small window size for these high response pixels and only the largest response values were retained. The resulting binary image thus clearly segmented pixels corresponding to epithelial cells. The problem with this approach was that it failed to capture the connected components corresponding to epithelial cells and only represented these cells as single pixel responses. Two more approaches were thus tried which avoided this problem.
 
 \item \textbf{K-Means Approach:}\\
-In order to capture epithelial cells of varying sizes, Laplacian of Gaussian filters of different sizes were used. 8 different LoG filters of $\sigma$ and $3 \sigma$ for basic scales of $\sigma = \{\sqrt{2}, 2, 2\sqrt{2}, 4\}$ were used from the Leung-Malik Filter Bank \cite{lmfb}. On convolving the pre-processed images with these 8 LoG filters, we observed better detection of circular regions. K-means was applied on these images to separate out different structural components. We observed the most distinctive separation of clusters for $K = 8$. This is intuitive since it was observed that images consisted of different pixel intensities for the following 8 regions in general:
+In order to capture epithelial cells of varying sizes, Laplacian of Gaussian filters of different sizes were used. 8 different LoG filters (shown in Figure \ref{fig:log_filters8} of $\sigma$ and $3 \sigma$ for basic scales of $\sigma = \{\sqrt{2}, 2, 2\sqrt{2}, 4\}$ were used from the Leung-Malik Filter Bank \cite{lmfb}. On convolving the pre-processed images with these 8 LoG filters, we observed better detection of circular regions. In order to segment the epithelial cell regions from the rest of the histological objects, we represented each pixel as an 8-dimensional vector, comprising the responses from the 8 different LoG filters. K-means clustering was then applied on these images to separate out the different histological objects. We observed the most distinctive separation of clusters occurred for $K = 8$. This is intuitive since it was observed that images consisted of different pixel intensities for the following 8 regions in general:
+
 
 \begin{enumerate}
 
 \item Lumen regions.
-\item Outer shell of the epithelial cells (generally darker than the entire cell itself).
+\item Outer boundary of the epithelial cells (generally darker than the entire cell itself).
 \item Inner parts of the epithelial cells.
 \item Darker regions in the stroma which are located close to epithelial cells.
 \item Image corners which are completely white.
 \item Cytoplasm present inside lumen objects.
 \item Darker staining of lumen objects along their gland walls.
-\item Lighter staining of stroma cells in contact with the peripheral of the image.
+\item Lighter staining of stroma cells in contact with the periphery of the image.
 
 \end{enumerate}
 
-In order to detect the cluster that corresponded most closely to epithelial cells, we chose clusters with the smallest variance in size of connected components and those which had the smallest size overall since both these features were intuitive of a cluster belonging to epithelial cells. The circularity of connected components within a cluster was also used in order to make this decision and for doing this, an elliptical structuring element was used and connected components were dilated with this element. We observed that the drawback for this approach was the accuracy in correctly detecting the cluster corresponding to epithelial cells.
+Post-clustering, we had to automatically detect the cluster that corresponded to the segmented epithelial cells. We experimented with several approaches for doing this. After extracting the connected components associated with each cluster we performed morphological opening on them with a disk shaped structuring element of 2 pixel diameter to remove any small stray pixels. Following this, we used the following two metrics to extract the cluster corresponding to the segmentation of epithelial cells:
+
+\begin{enumerate}
+\item[1.] We selected the clusters with the smallest average connected component size as the cluster corresponding to epithelial cells. This approach correctly identified the epithelial cell cluster in 118 out of 149 images. 
+\item[2.] Since epithelial cells are mostly circular or elliptical in shape, we selected the cluster with the largest percentage of elliptical connected components as the cluster corresponding to segmentation of epithelial cells. For this we fitted an ellipse to each connected component in each cluster and calculated the appropriate percentage for each cluster. This approach correctly identified the cluster corresponding to epithelial cells in 145 out of 149 images. We selected the results from this approach for further processing because of its better accuracy.
+\end{enumerate}
 
 \item \textbf{Hough Transform Approach:}\\
 Finally, we also tried another approach to detecting epithelial cells which involved using the Hough Transform \cite{hough} for detecting circular objects in the pre-processed images. The radius range of circles to be detected was based on the minimum and maximum epithelial cell radii that we observed in our images. Once circle centers were detected, we convolved each binary image with a circular structuring element to represent the approximate shape of epithelial cells.
 
-\end{enumerate} 
+\end{enumerate}
+
+
+\begin{figure}
+\includegraphics[width=2.0cm]{figs/lmf1.png}
+\includegraphics[width=2.0cm]{figs/lmf3.png}
+\includegraphics[width=2.0cm]{figs/lmf5.png}
+\includegraphics[width=2.0cm]{figs/lmf7.png}
+\includegraphics[width=2.0cm]{figs/lmf2.png}
+\includegraphics[width=2.0cm]{figs/lmf4.png}
+\includegraphics[width=2.0cm]{figs/lmf6.png}
+\includegraphics[width=2.0cm]{figs/lmf8.png}
+\caption{LM filters of 8 different sizes from LM filter bank}
+\label{fig:log_filters8}
+\end{figure}
+
 
 
 \subsection{Feature Extraction}
