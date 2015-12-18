@@ -37,24 +37,33 @@ For each of these classifiers, 10-fold cross-validation was performed. The resul
 \hline
  & \textbf{\texttt{SVM}} & \textbf{\texttt{KNN}} & \textbf{\texttt{DTREE}} \\ \hline
 \textbf{\texttt{LocalMin}} & 81.2\% & 69.8\% & 71.8\% \\ \hline
-\textbf{\texttt{kMeans}} &   &  &  \\ \hline
+\textbf{\texttt{kMeans}} & 71.8\%  & 66.4\% & 59.1\% \\ \hline
 \textbf{ \texttt{HoughTrans}} & 77.9\% & 73.2\% & 70.5\% \\ \hline
 \end{tabular}
 \caption{\label{table:accuracy}Accuracies of different approaches}
 \end{table}
 
-The ROC curves for local minima (\textbf{\texttt{LocalMin}}), Elliptical (\textbf{\texttt{kMeans}}) and Hough transform (\textbf{\texttt{HoughTrans}}) based features are shown in Figures~\ref{fig:ROC_localMin} and \ref{fig:ROC_circleConv} respectively. The area under curve further shows effectiveness of our approach. 
+The ROC curves for local minima (\textbf{\texttt{LocalMin}}), Elliptical (\textbf{\texttt{kMeans}}) and Hough transform (\textbf{\texttt{HoughTrans}}) based features are shown in Figures~\ref{fig:ROC_localMin},\ref{fig:ROC_kMeans} and \ref{fig:ROC_circleConv} respectively. The area under curve further shows effectiveness of our approach. 
 
-
-\begin{figure}
-\includegraphics[scale=0.2]{figs/ROC_circleConv.pdf}
-\caption{\label{fig:ROC_circleConv}ROC curve for Hough Transform based  epithelial features}
-\end{figure}  
+ 
 
 \begin{figure}
 \includegraphics[scale=0.2]{figs/ROC_localMin.pdf}
 \caption{\label{fig:ROC_localMin}ROC curve for local minima based epithelial based features}
 \end{figure}  
+
+\begin{figure}
+\includegraphics[scale=0.2]{figs/ROC_kMeans.pdf}
+\caption{\label{fig:ROC_kMeans}ROC curve for k-means based epithelial based features}
+\end{figure}
+
+
+\begin{figure}
+\includegraphics[scale=0.2]{figs/ROC_circleConv.pdf}
+\caption{\label{fig:ROC_circleConv}ROC curve for Hough Transform based  epithelial features}
+\end{figure} 
+
+
 
 Finally, we also note the precision and recall obtained for detecting cancer in these images using local minima based epithelial features with SVM classifier. Our approach has a high recall of 86.4\%, and a reasonable recall of 75\%.
 
