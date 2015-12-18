@@ -29,22 +29,42 @@ cancer progresses from benign to highly malignant. While benign,healthy tissue h
 
 \begin{figure}[!htb]
 \centering
-\captionsetup{justification=centering}
-\begin{subfigure}{.5\textwidth}
-	\centering
-	\includegraphics[scale=0.3]{figs/tissue_structure2.png}
-	\caption{Benign Tissue}\label{fig:tissue_structure2}
-	\centering
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-	\centering
-	\includegraphics[scale=0.3]{figs/tissue_structure3.png}
-	\caption{Malignant Tissue}\label{fig:tissue_structure2}
-	\centering
-\end{subfigure}
+\begin{minipage}[b]{.48\linewidth}
+  \centering
+  \centerline{\includegraphics[scale=0.3]{figs/tissue_structure2.png}}
+%  \vspace{1.5cm}
+  \centerline{{Benign Tissue}\label{fig:tissue_structure2}}\medskip
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.48\linewidth}
+  \centering
+  \centerline{\includegraphics[scale=0.3]{figs/tissue_structure3.png}}
+%  \vspace{1.5cm}
+  \centerline{{Malignant Tissue}\label{fig:tissue_structure2}}\medskip
+\end{minipage}
 \caption{Structural changes in Prostate tissue when cancer occurs}
 \label{fig:tissue_types}
-\centering
 \end{figure}
+
+%\begin{figure}[!htb]
+%\centering
+%\captionsetup{justification=centering}
+%\begin{subfigure}{.5\textwidth}
+%	\centering
+%	\includegraphics[scale=0.3]{figs/tissue_structure2.png}
+%	\caption{Benign Tissue}\label{fig:tissue_structure2}
+%	\centering
+%\end{subfigure}
+%\hfill
+%\begin{subfigure}{.5\textwidth}
+%	\centering
+%	\includegraphics[scale=0.3]{figs/tissue_structure3.png}
+%	\caption{Malignant Tissue}\label{fig:tissue_structure2}
+%	\centering
+%\end{subfigure}
+%\caption{Structural changes in Prostate tissue when cancer occurs}
+%\label{fig:tissue_types}
+%\centering
+%\end{figure}
 
 These changes, along with different color values identifying different regions of interest ( lumen regions are white, stroma is pink and epithelial cells are usually a dark shade of purple ) can be used to build a classification system for separating non-cancerous and cancerous images.
