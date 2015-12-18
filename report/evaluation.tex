@@ -30,7 +30,7 @@ In this section, we discuss the results for the different features we extract fr
 \item Decision Tree classifier (\textbf{\texttt{DTREE}})
 \end{itemize}
 
-To provide a context to evaluate these results, we also provide the accuracy for a naive baseline approach. The baseline (denoted \textbf{\texttt{Baseline}}) performs PCA on the images to extract principal components and applies different classifiers blindly without doing any feature engineering. Although this baseline is not expected to perform well, the difference in accuracy of any principled approach with the baseline approach is an indicator of the usefullness of that approach.
+To provide a context to evaluate these results, we also provide the accuracy for a naive baseline approach. The baseline (denoted \textbf{\texttt{Baseline}}) performs PCA on the images to extract principal components and applies different classifiers blindly without doing any feature engineering. Although this baseline is not expected to perform well, the difference in accuracy of any principled approach with the baseline approach is an indicator of the usefulness of that approach.
 
 For each of these classifiers, 10-fold cross-validation was performed. The results are summarised in Table~\ref{table:accuracy}. As can be seen from the table, SVM classifier with lumen and epithelial features performs the best, resulting in an accuracy of 81.2\%. Further, the LocalMinima technique of finding the epithelial features works the best. The baseline approach performs close to random classification for SVM and KNN, indicating that our approach is a significant improvement.
 
@@ -67,7 +67,7 @@ The ROC curves for local minima (\textbf{\texttt{LocalMin}}), Elliptical (\textb
 
 
 
-Finally, we also note the precision and recall obtained for detecting cancer in these images using local minima based epithelial features with SVM classifier. Our approach has a high recall of 86.4\%, and a reasonable recall of 75\%.
+Finally, we also note the precision and recall obtained for detecting cancer in these images using local minima based epithelial features with SVM classifier. Our approach has a high  precision of 86.4\%, and a reasonable recall of 75\%.
 
 \begin{table}
 \centering
