@@ -29,7 +29,10 @@ In this section, we discuss the results for the different features we extract fr
 \item K-nearest neighbor classifier (\textbf{\texttt{KNN}})
 \item Decision Tree classifier (\textbf{\texttt{DTREE}})
 \end{itemize}
-For each of these classifiers, 10-fold cross-validation was performed. The results are summarised in Table~\ref{table:accuracy}. As can be seen from the table, SVM classifier with lumen and epithelial features performs the best, resulting in an accuracy of 81.2\%. Further, the LocalMinima technique of finding the epithelial features works the best. 
+
+To provide a context to evaluate these results, we also provide the accuracy for a naive baseline approach. The baseline (denoted \textbf{\texttt{Baseline}}) performs PCA on the images to extract principal components and applies different classifiers blindly without doing any feature engineering. Although this baseline is not expected to perform well, the difference in accuracy of any principled approach with the baseline approach is an indicator of the usefullness of that approach.
+
+For each of these classifiers, 10-fold cross-validation was performed. The results are summarised in Table~\ref{table:accuracy}. As can be seen from the table, SVM classifier with lumen and epithelial features performs the best, resulting in an accuracy of 81.2\%. Further, the LocalMinima technique of finding the epithelial features works the best. The baseline approach performs close to random classification for SVM and KNN, indicating that our approach is a significant improvement.
 
 \begin{table}
 \centering
@@ -39,13 +42,12 @@ For each of these classifiers, 10-fold cross-validation was performed. The resul
 \textbf{\texttt{LocalMin}} & 81.2\% & 69.8\% & 71.8\% \\ \hline
 \textbf{\texttt{kMeans}} & 71.2\%  & 65.8\% & 63.8\% \\ \hline
 \textbf{ \texttt{HoughTrans}} & 75.2\% & 71.8\% & 69.8\% \\ \hline
+\textbf{ \texttt{Baseline}} & 54.1\% & 50.3\% & 67.1\% \\ \hline
 \end{tabular}
 \caption{\label{table:accuracy}Accuracies of different approaches}
 \end{table}
 
 The ROC curves for local minima (\textbf{\texttt{LocalMin}}), Elliptical (\textbf{\texttt{kMeans}}) and Hough transform (\textbf{\texttt{HoughTrans}}) based features are shown in Figures~\ref{fig:ROC_localMin},\ref{fig:ROC_kMeans} and \ref{fig:ROC_circleConv} respectively. The area under curve further shows effectiveness of our approach. 
-
- 
 
 \begin{figure}
 \includegraphics[scale=0.2]{figs/ROC_localMin.pdf}
