@@ -1,20 +1,70 @@
 \section{Classification Using Image-Level Features}
-The approaches using patch-based features failed to capture features that spanned multiple patches and which were representative of global characteristics of the images. 
-In order to capture these characteristics, it was necessary to segment the images to separate out components that corresponded to epithelial cells and lumen glands. 
-Once these components were extracted from each image, features specific to each component could then be constructed. Parts of the images corresponding to the stroma regions were not very distinctive features and thus we chose not to extract features based on stroma regions.
+The patch-based approach to feature extraction failed to capture features that spanned multiple patches and which were representative of global characteristics of the images. 
+In order to capture these characteristics, it was necessary to segment the images to separate out components that described the different histological objects (lumen, epithelial cells and stroma regions) more accurately. Once these components were extracted from each image, features specific to each component could then be constructed. We focused primarily on extracting features from the lumen and epithelial cell objects as they displayed the more variation with cancer malignancy as compared to the stroma region. We described the feature extraction methods employed to extract features based on lumen and epithelial objects in the following paragraphs.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=0.3]{figs/lumen_processing.png}
+\caption{The different steps in segmentation of Lumen regions. (a) Original Image, (b) Lumen Pixel Probabilities, (c) Candidate Lumen segmentation after thresholding and morphological processing of (b), (d) Final candidate lumen regions after discarding background regions.}
+\label{fig:lumen_extraction_process}
+\centering
+\end{figure}
+
+
 
 \subsection{Image Segmentation}
 
 \subsubsection{Lumen Gland Segmentation}
 
-In order to detect lumen glands from each image, a k-Nearest Neighbors classifier was trained using 1800 pixels manually labelled from different components of the image. This training set consisted of an equal number of pixels that belonged to either stroma, lumen glands or epithelial cells. For each pixel in the image, we found its nearest neighbors in the RGB color space. Based on the distance in the color space of each pixel's neighborhood from pixels corresponding to stroma and epithelial cells, we assigned a probability of belonging to stroma to each pixel. Pixels that had probabilities less than a threshold (< 0.2) were thus classified as being part of lumen glands and the resultant images were converted to binary images indicating whether a pixel belonged to a lumen gland or not. This approach also detected the edges of the image as lumen glands since they have similar color intensities as lumen objects. Thus, the largest connected components in the resultant lumen segmented images were discarded as these belonged to image edges. Finally, lumen glands were smoothed out through dilation using a disk structuring element.
+In order to detect lumen glands from each image, we trained a k-Nearest Neighbors classifier on 1800 manually labelled pixels from three different histological object regions. This training set consisted of an equal number of pixels that belonged to either stroma, lumen glands or epithelial cells. For each pixel in the image, we found its nearest neighbors in the RGB color space. Based on the distance in the color space of each pixel's neighborhood from pixels corresponding to stroma and epithelial cells, we assigned a probability of belonging to stroma to each pixel. Pixels that had probabilities less than a threshold (< 0.2) were thus classified as being part of lumen glands and the resultant probability density images post-processed with morphological opening and closing operations to remove stray stray pixels to obtain binary images indicating whether a pixel belonged to a lumen gland or not. This approach also detected the edges of the image as lumen glands since they have similar color intensities as lumen objects. To avoid mistaking these regions as lumen regions, we processed the list of identified lumen regions to discard regions that have
+an area larger than the a specified threshold. This threshold was calculated as the area left in an image
+quadrant after subtracting the area occupied by a circle q
+uadrant with radius equal to the half of the smaller image dimension (to approximate the area occupied by the tissue). Finally, the remaining connected components corresponding to the lumen glands were smoothed out through dilation using a disk structuring element. Figure \ref{fig:lumen_extraction_proccess} shows the various stages of output in the process.
 
 \subsubsection{Epithelial Cell Segmentation}
 
-Various approaches were tried in order to extract pixels corresponding to epithelial cells. Initially, all the images were contrast enhanced by clipping intensity values below a given threshold and increasing the pixel intensities of the resulting pixels. This helped to distinguish pixels corresponding to epithelial cells from the rest of the image since these pixels had predominantly higher pixel intensities. Once this pre-processing was done, we tried extracting epithelial cells using 3 different approaches.
+We tried various approaches to extract pixels corresponding to epithelial cells. Initially, all the images were contrast enhanced (Figure \ref{fig:contrast_enhanced}) by clipping intensity values below a given threshold and increasing the pixel intensities of the resulting pixels. This helped to distinguish pixels corresponding to epithelial cells from the rest of the image since these pixels had predominantly higher pixel intensities. Once this pre-processing was done, we tried extracting epithelial cells using 3 different approaches (Figure \ref{fig:epithelial_process}).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=0.1]{figs/epithelial_contrast.png}
+\caption{Contrast enhanced image for epithelial cell segmentation.}
+\label{fig:contrast_enhanced}
+\centering
+
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\subfloat[LoG filtered image]{
+	\includegraphics[scale=0.1]{figs/epithelial1a.png}
+}
+\hspace*{5mm}
+\subfloat[Eipthelial cell locations extracted using local maxima]{
+	\includegraphics[scale=0.1]{figs/epithelial1b.png}
+}
+\\
+\subfloat[K-means segmented image. Teal colored regions correspond to epithelial cells]{
+	\includegraphics[scale=0.1]{figs/epithelial2a.png}
+}
+\hspace*{5mm}
+\subfloat[Segmented epithelial cells from the K-means identified cluster]{
+	\includegraphics[scale=0.1]{figs/epithelial2b.png}
+}
+\\
+\subfloat[Epithelial cell locations identified by Hough Transform]{
+	\includegraphics[scale=0.19]{figs/epithelial3a.png}
+}
+\hspace*{5mm}
+\subfloat[Segmented epithelial cells from the Hough Transform locations]{
+	\includegraphics[scale=0.1]{figs/epithelial3b.png}
+}
+\caption{Extraction of Epithelial cells using three different approaches.}
+\label{fig:epithelial_process}
+\centering
+\end{figure}
 
 \begin{enumerate}
-
 \item \textbf{Local Minima Approach:}\\
 We convolved the image with a Laplacian of Gaussian filter and observed high responses for regions corresponding to epithelial cells due to their circular shape. Subsequently, local maxima points were detected in a small window size for these high response pixels and only the largest response values were retained. The resulting binary image thus clearly segmented pixels corresponding to epithelial cells. The problem with this approach was that it failed to capture the connected components corresponding to epithelial cells and only represented these cells as single pixel responses. Two more approaches were thus tried which avoided this problem.
 
@@ -43,12 +93,12 @@ Post-clustering, we had to automatically detect the cluster that corresponded to
 \end{enumerate}
 
 \item \textbf{Hough Transform Approach:}\\
-Finally, we also tried another approach to detecting epithelial cells which involved using the Hough Transform \cite{hough} for detecting circular objects in the pre-processed images. The radius range of circles to be detected was based on the minimum and maximum epithelial cell radii that we observed in our images. Once circle centers were detected, we convolved each binary image with a circular structuring element to represent the approximate shape of epithelial cells.
+Finally, we also tried another approach to detecting epithelial cells which involved using the Hough Transform \cite{hough} for detecting circular objects in the pre-processed images. The hough transform is a technique for finding objects such as circles or lines in an image by means of a vote counting procedure in the parameter space of the equation describing the geometry of the object. To extract the circular regions corresponding to epithelial cells, we processed the images with hough transforms to find circles having radius between 3 and 6 pixels which corresponded to the approximate maximum and minimum epithelial cell sizes which we observed in our images. Once circle centers were detected, we convolved each binary image with a circular structuring element to represent the approximate shape of epithelial cells.
 
 \end{enumerate}
 
 
-\begin{figure}
+\begin{figure}[!htb]
 \includegraphics[width=2.0cm]{figs/lmf1.png}
 \includegraphics[width=2.0cm]{figs/lmf3.png}
 \includegraphics[width=2.0cm]{figs/lmf5.png}
@@ -91,15 +141,15 @@ The intuition behind keeping this feature is that non-cancerous tissues generall
 \end{enumerate}
 
 \subsubsection{Epithelial Cell-Based Features}
-The extent of cancer progression in a prostate cancer tissue can be characterized by the proliferation of epithelial cells throughout the stroma. In cancerous tissues, epithelial cells generally penetrate lumen objects multiply uncontrollably thus leading to higher density of epithelial cells. Contrastingly in non-cancerous tissues, epithelial cells generally line the lumen objects without puncturing them. We aim to capture these properties and construct 2 features based on morphological properties of epithelial cells.
+The extent of cancer progression in a prostate cancer tissue can be characterized by the proliferation of epithelial cells throughout the stroma. In cancerous tissues, epithelial cells generally penetrate lumen objects and multiply uncontrollably thus leading to higher density of epithelial cells. Contrastingly in non-cancerous tissues, epithelial cells generally line the lumen objects without puncturing them. In order to capture these properties, we constructed the following two features:
 
 \begin{enumerate}
-\item \textbf{Percentage of Epithelial Cells:} We calculate the percentage of image pixels that correspond to epithelial cells in the entire image. In cancerous tissue images, epithelial cells are more common as compared to non-cancerous tissue images and thus this feature can effectively capture this property.
+\item \textbf{Overall density of Epithelial cells in the tissue:} We calculated the ratio of number of connected components representing epithelial cells to the total area of the image. This give us a good approximation of the density of epithelial cells in the image which is an important factor that distinguishes between benign and malignant tissue.
 
-\item \textbf{Percentage of Epithelial Cells Along Lumen Boundaries:} By calculating the percentage of the total epithelial cells that are along the lumen boundaries as compared to epithelial cells throughout the image in general, we will be able to distinguish images in which the density of epithelial cells is high along the lumen boundaries. As explained previously, non-cancerous tissue images have a high density of epithelial cells along the lumen boundaries than cancerous tissue images. 
+\item \textbf{Density of Epithelial cells in Lumen boundary regions:} We calculated this as the ratio of number of epithelial cells lying in a boundary region of upto 30 pixels around lumen objects and the area of the lumen boundary region. As explained previously, non-cancerous tissue images have a high density of epithelial cells along the lumen boundaries than cancerous tissue images. This feature gave us a good approximation of the density of epithelial cells around lumen objects.
 
 \end{enumerate}
 
-We thus obtain a 12-dimensional feature vector for each image example. Besides the above morphological features, we also tried using histogram-based features to capture color variations between cancerous and non-cancerous images. The intuition behind this was that in cancerous images, the color histogram should shift towards blue to account for a larger number of epithelial cells as compared to non-cancerous tissues. This distinction was not clearly observed in our images though, the reasons for which were twofold. Namely, the color staining was not uniform for epithelial cells (the outer regions for cells were generally darker than the core areas), and many non-cancerous tissue images with a large number of lumen objects also had many epithelial cells around the boundaries of these lumen objects. We thus discarded these features from our feature vector since they were unable to provide a good distinction between cancerous and non-cancerous tissue images.
+We thus obtain a 12-dimensional feature vector for each image example. Besides the above morphological features, we also tried using histogram-based features to capture color variations between cancerous and non-cancerous images. The intuition behind this was that in cancerous images, the color histogram should shift towards blue to account for a larger number of epithelial cells as compared to non-cancerous tissues. This distinction was not clearly observed in our images though, the reasons for which were twofold. Firstly, the color staining was not uniform for epithelial cells (the outer regions for cells were generally darker than the core areas), and many non-cancerous tissue images with a large number of lumen objects also had many epithelial cells around the boundaries of these lumen objects. We thus opted to exclude these features from our feature vector since they were unable to provide a good distinction between cancerous and non-cancerous tissue images.
 
 \label{sec:image_based_approaches}
