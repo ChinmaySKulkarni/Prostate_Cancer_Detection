@@ -8,3 +8,4 @@ _DS_Store
 clipped_matfile_patch_data3_50x50/*.tif*
 *.svs
 HEimages/
+*.bak
